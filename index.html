@@ -1,0 +1,1150 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI-Клуб 2.0</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ease:cubic-bezier(.23,1,.32,1);--bg:#07080b;--tx:#f2efe9;--mu:rgba(242,239,233,.6);--ln:rgba(242,239,233,.14);--gold:#e9c48a}
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--bg);scroll-behavior:smooth}
+body{font-family:'Manrope',system-ui,sans-serif;background:var(--bg);color:var(--tx);-webkit-font-smoothing:antialiased;overflow-x:clip}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+.sec{position:relative;overflow:clip}
+.rv{opacity:0;transform:translateY(24px);filter:blur(6px);transition:opacity 1s var(--ease),transform 1s var(--ease),filter 1s var(--ease)}
+.in .rv{opacity:1;transform:none;filter:none;transition-delay:var(--d,0s)}
+.wr span{opacity:.16;transition:opacity .5s ease}
+.in .wr span{opacity:1;transition-delay:calc(var(--w) * 45ms + .3s)}
+
+/* свечение фона секций */
+.glow{position:absolute;pointer-events:none;border-radius:50%;filter:blur(20px)}
+.glow.g{background:radial-gradient(circle,rgba(233,196,138,.14),transparent 62%)}
+.glow.b{background:radial-gradient(circle,rgba(80,110,170,.14),transparent 62%)}
+
+/* рамка */
+.hud-brand{position:fixed;top:28px;left:40px;z-index:60;font-size:12px;font-weight:500;letter-spacing:.32em;text-transform:uppercase;color:rgba(242,239,233,.8);pointer-events:none;mix-blend-mode:difference}
+.hud-lang{position:fixed;top:18px;right:24px;z-index:60;display:flex;gap:2px;padding:4px;border-radius:999px;background:rgba(255,255,255,.06);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:inset 0 0 0 1px rgba(255,255,255,.16)}
+.hud-lang button{font-size:11px;font-weight:600;letter-spacing:.18em;padding:9px 13px;border-radius:999px;color:rgba(242,239,233,.7);transition:.25s}
+.hud-lang button.on{background:var(--tx);color:var(--bg)}
+.hud-prog{position:fixed;left:0;top:0;height:1px;width:0;z-index:61;background:linear-gradient(90deg,transparent,var(--gold));transition:width .6s var(--ease)}
+
+/* стеклянное окно с видео */
+.portal{position:absolute;overflow:hidden;isolation:isolate;box-shadow:0 40px 80px -30px rgba(0,0,0,.9);animation:float 12s ease-in-out infinite;background:#0d0f14}
+.portal video{position:absolute;inset:-4%;width:108%;height:108%;object-fit:cover;z-index:-1}
+.portal::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:linear-gradient(140deg,rgba(255,255,255,.4) 0%,rgba(255,255,255,.06) 18%,rgba(255,255,255,0) 40%),radial-gradient(120% 80% at 50% 120%,rgba(0,0,0,.55),transparent 60%);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.28),inset 8px 10px 30px rgba(255,255,255,.12),inset -20px -30px 60px rgba(0,0,0,.45)}
+.portal::after,.gl::after{content:"";position:absolute;inset:-1px;border-radius:inherit;pointer-events:none;background:conic-gradient(from 210deg,transparent 0 70%,rgba(255,236,200,.85) 78%,transparent 86%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;padding:1.5px;opacity:.8}
+.portal.dim video{filter:brightness(.5) contrast(1.35) sepia(.35)}
+@keyframes float{50%{transform:translate(0,-14px) rotate(.6deg)}}
+.pin{position:absolute;font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:#fff;display:flex;align-items:center;gap:8px;text-shadow:0 2px 12px rgba(0,0,0,.7);z-index:2}
+.pin::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--gold);box-shadow:0 0 12px var(--gold)}
+
+/* стекло для карточек */
+.gl{position:relative;border-radius:28px;background:linear-gradient(160deg,rgba(255,255,255,.075),rgba(255,255,255,.018));box-shadow:inset 0 0 0 1px rgba(255,255,255,.13),inset 6px 8px 24px rgba(255,255,255,.04),0 30px 60px -30px rgba(0,0,0,.8);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+
+/* общая сетка и заголовки */
+.wrap{position:relative;max-width:1320px;margin:0 auto;padding:150px 56px;z-index:1}
+.hd{text-align:center;margin-bottom:64px}
+.k{font-size:12px;font-weight:500;letter-spacing:.38em;text-transform:uppercase;color:var(--mu)}
+.h2{font-size:clamp(24px,2.6vw,42px);font-weight:200;letter-spacing:.24em;text-transform:uppercase;line-height:1.35;margin-top:18px}
+.ln{width:36px;height:1px;background:var(--tx);opacity:.7;margin:26px auto 0}
+.sub{font-size:16px;font-weight:300;letter-spacing:.06em;color:var(--mu);margin-top:18px}
+.lb{font-size:12px;font-weight:600;letter-spacing:.3em;text-transform:uppercase;color:var(--mu)}
+.big{font-size:clamp(22px,2.3vw,36px);font-weight:300;line-height:1.38;letter-spacing:-.01em}
+.txt{font-size:17px;font-weight:300;line-height:1.7;color:rgba(242,239,233,.82)}
+
+/* 1. первый экран */
+.hero{height:100vh;height:100svh;min-height:680px;background:radial-gradient(1100px 700px at 75% 15%,rgba(233,196,138,.16),transparent 60%),radial-gradient(900px 700px at 10% 90%,rgba(80,110,170,.14),transparent 60%),var(--bg)}
+.cap{position:absolute;font-size:16px;font-weight:400;letter-spacing:.14em;text-transform:uppercase;color:rgba(242,239,233,.7);line-height:1.9;z-index:3}
+.cap.bl{bottom:34px;left:40px}
+.cap.br{bottom:34px;right:40px;text-align:right}
+.p1{width:44vw;height:52vh;top:-8vh;right:-6vw;border-radius:58% 42% 34% 66%/40% 34% 66% 60%;animation-delay:-2s}
+.p2{width:30vw;height:56vh;top:16vh;left:-4vw;border-radius:46% 54% 62% 38%/38% 46% 54% 62%;animation-delay:-6s}
+.p3{width:34vw;height:46vh;bottom:-6vh;right:8vw;border-radius:40% 60% 50% 50%/56% 42% 58% 44%;animation-delay:-9s}
+.route{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
+.hero .portal{z-index:2}
+@media (min-width:761px){.hero .hv{position:absolute;inset:0;z-index:2}}
+.route path{fill:none;stroke:rgba(242,239,233,.55);stroke-width:1.2;stroke-dasharray:5 8;animation:dash 6s linear infinite}
+.rt-dot{filter:drop-shadow(0 0 6px #e9c48a)}
+@keyframes dash{to{stroke-dashoffset:-130}}
+.mid{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);text-align:center;z-index:3;width:min(720px,90vw)}
+.mid h1{font-size:clamp(40px,5vw,84px);font-weight:200;letter-spacing:.3em;text-transform:uppercase;line-height:1.1;padding-left:.3em;margin-top:16px}
+.mid .bur{color:#8b1e32;font-weight:600}
+.mid .emr{color:var(--gold);font-weight:500}
+.mid p{font-size:16px;font-weight:300;letter-spacing:.06em;color:rgba(242,239,233,.78);margin:22px auto 0;max-width:440px;line-height:1.7}
+.mid .go{margin-top:30px;font-size:12px;min-height:46px;font-weight:500;letter-spacing:.32em;text-transform:uppercase;color:var(--tx);display:inline-flex;gap:10px;align-items:center;padding:14px 24px;border-radius:999px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.22);background:rgba(255,255,255,.05);backdrop-filter:blur(8px);transition:background .3s}
+.mid .go:hover{background:rgba(255,255,255,.12)}
+.mid .go i{font-style:normal;animation:bob 1.8s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(4px)}}
+
+/* первый экран: Prisma слева, текст справа */
+.hero2{display:grid;grid-template-columns:1.3fr 1fr;align-items:center;gap:0;padding:0;background:radial-gradient(900px 700px at 85% 30%,rgba(233,196,138,.12),transparent 60%),var(--bg)}
+.pz{position:relative;order:1;height:100vh;height:100svh;min-height:640px;overflow:hidden;-webkit-mask-image:radial-gradient(ellipse 75% 70% at 42% 50%,#000 45%,transparent 100%);mask-image:radial-gradient(ellipse 75% 70% at 42% 50%,#000 45%,transparent 100%)}
+.pz video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.pz-noise{position:absolute;inset:0;opacity:.35;mix-blend-mode:overlay;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.pz-grad{position:absolute;inset:0;background:linear-gradient(270deg,var(--bg) 0%,rgba(7,8,11,0) 35%)}
+.mid2{order:2;position:relative;z-index:2;padding:0 clamp(32px,5vw,90px) 0 0;text-align:left}
+.mid2 h1{font-size:clamp(34px,3.7vw,66px);font-weight:200;letter-spacing:.16em;white-space:nowrap;text-transform:uppercase;line-height:1.1;margin-top:18px}
+.mid2 .ln{margin:28px 0 0}
+.mid2 p{font-size:17px;font-weight:300;letter-spacing:.04em;line-height:1.7;margin-top:26px;max-width:460px}
+.mid2 .go{margin-top:72px;display:inline-flex;flex-direction:column;align-items:center;gap:14px;padding:6px 0;font-size:15px;font-weight:400;letter-spacing:.38em;text-transform:uppercase;color:var(--tx);cursor:pointer}
+.mid2 .go-t{padding-left:0;margin-right:-.38em}
+.mid2 .go-l{width:100%;height:1px;background:linear-gradient(90deg,transparent,rgba(242,239,233,.7),transparent);transition:background .4s}
+.mid2 .go-v{width:30px;height:15px;color:var(--gold);animation:goBob 1.8s ease-in-out infinite}
+@keyframes goBob{0%,100%{transform:translateY(0);opacity:.6}50%{transform:translateY(7px);opacity:1}}
+.mid2 .go:hover .go-l{background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.mid2 .bur{color:#8b1e32;font-weight:600}
+.mid2 .emr{color:var(--gold);font-weight:500}
+@media (max-width:760px){
+  .hero2{grid-template-columns:1fr;padding:40px 16px 64px;height:auto}
+  .pz{order:1;height:56vh;min-height:320px;-webkit-mask-image:radial-gradient(ellipse 80% 75% at 50% 45%,#000 45%,transparent 100%);mask-image:radial-gradient(ellipse 80% 75% at 50% 45%,#000 45%,transparent 100%)}
+  .pz-grad{display:none}
+  .mid2{order:2}
+  .mid2{padding:36px 8px 0}
+  .mid2 h1{font-size:34px;letter-spacing:.14em}
+}
+
+/* 2. сегменты */
+#seg .wrap{max-width:1640px;padding-left:32px;padding-right:32px}
+.sgw{padding:10px 18px 14px}
+.sg{display:grid;grid-template-columns:1.05fr .95fr 1.05fr 1.55fr 1.2fr 1.55fr 1.15fr}
+.sg-row{display:contents}
+.sg-h{font-size:11px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--mu);padding:16px 12px 14px;border-bottom:1px solid rgba(242,239,233,.3);line-height:1.4}
+.sg-c{font-size:16px;font-weight:300;line-height:1.45;padding:16px 12px 18px;border-bottom:1px solid var(--ln);color:rgba(242,239,233,.82);transition:background .35s,color .35s}
+.sg-row:last-child .sg-c{border-bottom:0}
+.sg-c.name{font-size:17px;font-weight:600;color:var(--tx);line-height:1.3}
+.sg-c.inc b{display:block;font-size:17px;font-weight:600;color:var(--gold);white-space:nowrap}
+.sg-c.inc span{display:block;color:var(--mu);margin-top:4px}
+.sg-row:hover .sg-c{background:rgba(233,196,138,.06);color:var(--tx)}
+
+/* 2. сегменты: лестница роста */
+#seg .wrap{max-width:1400px}
+.lad{position:relative;display:grid;grid-template-columns:repeat(3,1fr);gap:22px;align-items:end;padding-top:40px}
+.lad-path{position:absolute;left:0;right:0;top:-10px;width:100%;height:240px;pointer-events:none;z-index:0}
+.lad-path path{fill:none;stroke:rgba(242,239,233,.45);stroke-width:1.2;stroke-dasharray:5 8;animation:dash 6s linear infinite}
+.stp-c{z-index:1;padding:30px 28px 30px;margin-bottom:calc(var(--up) * 70px);display:flex;flex-direction:column;gap:22px}
+.sc-n{font-size:12px;font-weight:600;letter-spacing:.3em;color:var(--mu);display:flex;align-items:center;gap:10px}
+.sc-n::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--gold);box-shadow:0 0 12px var(--gold)}
+.stp-c h3{font-size:clamp(20px,1.7vw,26px);font-weight:300;letter-spacing:.12em;text-transform:uppercase;line-height:1.25;margin-top:16px}
+.sc-inc{font-size:clamp(28px,2.6vw,40px);font-weight:300;color:var(--gold);margin-top:14px;white-space:nowrap;letter-spacing:.01em}
+.sc-st{font-size:12px;font-weight:600;letter-spacing:.26em;text-transform:uppercase;color:var(--mu);margin-top:6px}
+.sc-task p{font-size:19px;font-weight:600;line-height:1.4;margin-top:8px}
+.sc-res{padding:16px 18px;border-radius:18px;background:linear-gradient(140deg,rgba(233,196,138,.2),rgba(233,196,138,.06));box-shadow:inset 0 0 0 1px rgba(233,196,138,.45)}
+.sc-res .lb{color:var(--gold)}
+.sc-res p{font-size:17px;font-weight:500;line-height:1.45;margin-top:8px}
+.sc-sec{border-top:1px solid var(--ln);padding-top:16px;display:grid;gap:6px}
+.sc-sec dt{font-size:11px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:rgba(242,239,233,.45);margin-top:8px}
+.sc-sec dt:first-child{margin-top:0}
+.sc-sec dd{font-size:16px;font-weight:300;line-height:1.5;color:rgba(242,239,233,.62)}
+
+/* 2. сегменты: каталог */
+.lad{display:flex;flex-direction:column;gap:28px}
+.pc{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;justify-content:center;padding:70px 0 40px}
+@media (min-width:901px){.pc{position:sticky;top:0;background:var(--bg);border-radius:40px 40px 0 0;box-shadow:0 -40px 60px -20px rgba(0,0,0,.85),inset 0 1px 0 rgba(242,239,233,.12);padding-left:32px;padding-right:32px;margin:0 -32px}.pc:first-child{box-shadow:none;border-radius:0;background:transparent}#seg>.glow{z-index:5;pointer-events:none}.pc:nth-child(2){z-index:2}.pc:nth-child(3){z-index:3}}
+.lad{gap:0!important}
+.pc-h{display:flex;align-items:center;gap:30px;margin-bottom:26px}
+.pc-num{font-size:clamp(64px,7vw,112px);font-weight:200;line-height:.85;color:var(--gold)}
+.pc-who h3{font-size:clamp(20px,1.8vw,28px);font-weight:300;letter-spacing:.12em;text-transform:uppercase;margin-top:10px;line-height:1.25}
+.pc-pill{margin-left:auto;text-align:right;padding:12px 24px;border-radius:999px;box-shadow:inset 0 0 0 1.5px rgba(242,239,233,.4)}
+.pc-pill b{display:block;font-size:20px;font-weight:300;color:var(--gold);white-space:nowrap}
+.pc-pill span{display:block;font-size:12px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--mu);margin-bottom:4px}
+.pc-stg{font-size:clamp(20px,1.7vw,26px);font-weight:300;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-top:10px}
+.pc-g{display:grid;grid-template-columns:5fr 7fr;gap:16px}
+.pc-l{display:flex;flex-direction:column;gap:16px}
+.pc-t{flex:1;border-radius:26px;padding:22px 24px;background:rgba(255,255,255,.04);box-shadow:inset 0 0 0 1px rgba(255,255,255,.1)}
+.pc-t p{font-size:16px;font-weight:300;line-height:1.5;margin-top:8px;color:rgba(242,239,233,.85)}
+.pc-t p.st{font-size:19px;font-weight:600;color:var(--tx)}
+.pc-t.gold{background:linear-gradient(140deg,rgba(233,196,138,.2),rgba(233,196,138,.06));box-shadow:inset 0 0 0 1px rgba(233,196,138,.45)}
+.pc-t.gold .lb{color:var(--gold)}
+.pc-t.gold p{font-weight:500;color:var(--tx)}
+.pc-v{position:relative;border-radius:26px;overflow:hidden;min-height:470px;background:#cccccc}
+.pc-vw{position:absolute;inset:0;overflow:hidden}
+.pc-vw video{position:absolute;top:-15%;left:50%;height:145%;width:auto;aspect-ratio:1/1;transform:translateX(-50%);object-fit:cover;-webkit-mask-image:radial-gradient(circle closest-side,#000 76%,transparent 99%);mask-image:radial-gradient(circle closest-side,#000 76%,transparent 99%)}
+.pc-ov{position:absolute;left:14px;right:14px;bottom:14px;margin:0;display:grid;grid-template-columns:1fr 1fr;gap:18px;padding:20px 22px;border-radius:20px;background:rgba(7,8,11,.8);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.pc-ov p{font-size:16px;font-weight:300;line-height:1.5;margin-top:8px;color:rgba(242,239,233,.88)}
+@media (max-width:900px){
+  .pc{padding:60px 0 40px;min-height:auto}
+  .pc-h{flex-wrap:wrap;gap:14px 20px}
+  .pc-pill{margin-left:0;text-align:left}
+  .pc-g{grid-template-columns:1fr}
+  .pc-v{min-height:0;display:flex;flex-direction:column}
+  .pc-vw{position:relative;inset:auto;height:300px}
+  .pc-vw video{height:145%;top:-15%}
+  .pc-ov{position:relative;left:auto;right:auto;bottom:auto}
+  .pc-ov{position:relative;left:auto;right:auto;bottom:auto;grid-template-columns:1fr;border-radius:0;background:#14161b}
+}
+
+/* 3. боль */
+.ins{margin-top:28px;padding:22px 28px 24px;border-left:2px solid var(--gold);background:linear-gradient(90deg,rgba(233,196,138,.14),rgba(233,196,138,0));border-radius:0 20px 20px 0}
+.ins-k{font-size:13px;font-weight:600;letter-spacing:.32em;text-transform:uppercase;color:var(--gold)}
+.ins p{font-size:clamp(19px,1.7vw,26px);font-weight:400;line-height:1.45;margin-top:10px;color:#fff;text-shadow:0 2px 24px rgba(0,0,0,.7)}
+.pain-sec{min-height:100vh;display:flex;align-items:center}
+.pain-sec .wrap{width:100%}
+.pain-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:grayscale(.2) brightness(.55)}
+.pain-dim{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,rgba(7,8,11,.55),rgba(7,8,11,.85) 70%),linear-gradient(180deg,var(--bg) 0%,rgba(7,8,11,0) 18%,rgba(7,8,11,0) 82%,var(--bg) 100%)}
+.pain-sec .pain{grid-template-columns:1fr;max-width:1000px;margin:0 auto}
+.pain-sec .h2{text-shadow:0 2px 30px rgba(0,0,0,.6)}
+.pain-sec .big{text-shadow:0 2px 24px rgba(0,0,0,.7)}
+.pain-sec .gl{background:linear-gradient(160deg,rgba(14,15,19,.75),rgba(14,15,19,.55))}
+.pain{display:grid;grid-template-columns:5fr 7fr;gap:72px;align-items:center}
+.pain-v{position:relative;height:560px}
+.pain-v .portal{inset:0;border-radius:46% 54% 62% 38%/38% 46% 54% 62%}
+.pain .h2{margin-top:0;text-align:left}
+.pain .ln{margin:24px 0 0}
+.pain .big{margin-top:36px}
+.pain .gl{margin-top:36px;padding:26px 28px 30px}
+.pain .gl p{margin-top:12px;font-size:clamp(19px,1.6vw,24px);font-weight:300;line-height:1.5}
+
+/* 4. было → стало */
+.na-sub{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:.2em .9em;margin-top:14px;color:var(--mu);font-size:clamp(16px,1.3vw,20px);font-weight:300;letter-spacing:.08em}
+.na-hd .mu{color:var(--mu)}
+.na-hd .arw{color:var(--gold);letter-spacing:0}
+.bac .was{font-size:17px;font-weight:300;line-height:1.55;color:var(--mu);margin-top:14px}
+.bac .ar{width:40px;height:40px;border-radius:50%;margin:22px 0;display:grid;place-items:center;color:var(--bg);background:linear-gradient(140deg,#fff,var(--gold));box-shadow:0 0 24px rgba(233,196,138,.5);transform:translateY(-8px);opacity:0;transition:transform .6s var(--ease),opacity .6s}
+.in .bac .ar{transform:none;opacity:1;transition-delay:calc(var(--d,0s) + .4s)}
+.bac .nowl{margin-bottom:10px;color:var(--gold)}
+.bac .now{font-size:19px;font-weight:500;line-height:1.42}
+
+/* 4. было → стало: аккордеон при прокрутке */
+.ba-sec{height:380vh}
+.ba-stick{position:sticky;top:0;height:100vh;height:100dvh;overflow:hidden;display:flex;align-items:center}
+.ba-wrap{width:100%;padding-top:90px;padding-bottom:60px}
+.ba-wrap .hd{margin-bottom:44px}
+.ba{display:flex;gap:16px;height:min(62vh,520px)}
+.bac{position:relative;flex:1 1 0;min-width:0;overflow:hidden;cursor:pointer;padding:0;transition:flex .8s var(--ease),box-shadow .5s}
+.bac.on{flex:4.2 1 0;cursor:default;box-shadow:inset 0 0 0 1px rgba(233,196,138,.5),0 30px 60px -30px rgba(0,0,0,.8)}
+.bac-mini{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:26px 0 28px;transition:opacity .4s}
+.bac.on .bac-mini{opacity:0;pointer-events:none}
+.bac-n{font-size:28px;font-weight:200;color:var(--gold);line-height:1}
+.bac-v{writing-mode:vertical-rl;transform:rotate(180deg);font-size:16px;font-weight:300;letter-spacing:.04em;color:var(--mu);max-height:78%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bac-full{position:absolute;inset:0;padding:34px 40px 36px;display:flex;flex-direction:column;opacity:0;transform:translateY(16px);transition:opacity .5s,transform .6s var(--ease);min-width:420px}
+.bac.on .bac-full{opacity:1;transform:none;transition-delay:.25s}
+.bac-n.big{font-size:clamp(48px,4.4vw,72px);margin-bottom:auto}
+.bac .was{font-size:18px;font-weight:300;line-height:1.55;color:var(--mu);margin-top:10px;max-width:560px}
+.bac .ar{width:40px;height:40px;border-radius:50%;margin:20px 0;display:grid;place-items:center;color:var(--bg);background:linear-gradient(140deg,#fff,var(--gold));box-shadow:0 0 24px rgba(233,196,138,.5)}
+.bac .nowl{margin-bottom:10px;color:var(--gold)}
+.bac .now{font-size:clamp(20px,1.7vw,26px);font-weight:500;line-height:1.38;max-width:620px}
+.ba-dots{display:none}
+@media (max-width:900px){
+  .ba-sec{height:auto}
+  .ba-stick{position:relative;height:auto;display:block}
+  .ba{flex-direction:column;height:auto}
+  .bac,.bac.on{flex:none}
+  .bac-mini{display:none}
+  .bac-full{position:relative;inset:auto;opacity:1;transform:none;min-width:0;padding:22px 20px 24px}
+  .bac-n.big{font-size:40px;margin-bottom:12px}
+}
+
+/* 5. ключевой месседж */
+.km{text-align:center;max-width:1100px;margin:0 auto}
+.km .big{font-size:clamp(26px,2.9vw,46px);font-weight:200;line-height:1.35;margin-top:30px}
+.km .gl{margin:56px auto 0;max-width:820px;padding:26px 32px 30px;text-align:left}
+.km .gl .txt{margin-top:12px}
+
+/* ключевой месседж: один экран, видео фоном */
+.km-sec{min-height:100vh;min-height:100dvh;display:flex;align-items:center}
+.km-sec .wrap{position:relative;z-index:1;width:100%;padding-top:90px;padding-bottom:90px}
+.km-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 85%;opacity:.95}
+.km-dim{position:absolute;inset:0;pointer-events:none;z-index:0;background:linear-gradient(180deg,var(--bg) 0%,rgba(7,8,11,.86) 22%,rgba(7,8,11,.62) 55%,rgba(7,8,11,.25) 80%,var(--bg) 100%),radial-gradient(ellipse 55% 45% at 50% 40%,rgba(7,8,11,.55),rgba(7,8,11,0) 75%)}
+.km-sec .km .km-p{text-shadow:0 2px 24px rgba(0,0,0,.85)}
+.km-sec .km .gl{background:linear-gradient(160deg,rgba(14,15,19,.7),rgba(14,15,19,.5));backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+@media (max-width:760px){.km-bg{object-position:50% 90%}}
+
+/* ключевой месседж: один абзац */
+.km .km-p{margin-top:30px;font-size:clamp(22px,2.4vw,36px);line-height:1.45}
+.km .km-p b{font-weight:500}
+.km-p .kl{display:block;color:var(--tx);transition:color .6s,text-shadow .6s}
+.km-p .kl.on{color:#fff;text-shadow:0 0 14px rgba(233,196,138,.75),0 0 34px rgba(233,196,138,.45),0 0 70px rgba(233,196,138,.25)}
+
+/* 6. решение */
+.sol{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.sol .gl{padding:34px 34px 38px}
+.sol .big{margin-top:16px}
+.sol .main{font-size:clamp(22px,2.2vw,34px);font-weight:500;line-height:1.25;margin-top:16px;text-transform:uppercase;letter-spacing:.04em}
+.sol .tag{font-size:18px;font-weight:300;color:var(--gold);margin-top:22px;letter-spacing:.02em}
+
+/* решение: центральная идея */
+.sol2{text-align:center;max-width:1180px;margin:0 auto}
+.s-main{font-size:clamp(30px,3.8vw,62px);font-weight:200;letter-spacing:.1em;text-transform:uppercase;line-height:1.25}
+.s-tag{display:inline-block;margin-top:40px;font-size:clamp(18px,1.7vw,26px);font-weight:400;letter-spacing:.06em;color:var(--bg);padding:16px 30px;border-radius:999px;background:linear-gradient(140deg,#fff,var(--gold));box-shadow:0 0 50px rgba(233,196,138,.35)}
+.s-ess{display:grid;grid-template-columns:160px 1fr;gap:32px;align-items:baseline;text-align:left;margin-top:72px;padding:28px 34px}
+.s-ess p{font-size:17px;font-weight:300;line-height:1.7;color:rgba(242,239,233,.82)}
+
+/* решение: наезд в зрачок */
+.eye-sec{height:360vh;background:#000}
+.eye-in{position:sticky;top:0;height:100vh;height:100dvh;overflow:hidden;background:#000}
+.eye-v{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.eye-blk{position:absolute;inset:0;background:#000;pointer-events:none}
+.eye-c{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 32px 40px;text-align:center}
+.eye-h{opacity:0;will-change:transform,opacity;transform-origin:50% 50%}
+.eye-h .h2{margin-top:0}
+.eye-r{opacity:0;transform:translateY(30px);margin-top:36px;width:100%}
+.eye-r .s-main{font-size:clamp(26px,3vw,50px);font-weight:400}
+.eye-r .s-tag{margin-top:28px}
+.eye-r .s-tag{display:inline-flex;align-items:center;gap:22px;margin-top:34px;padding:0;border-radius:0;background:none;box-shadow:none;color:var(--gold);font-size:16px;font-weight:400;letter-spacing:.28em;text-transform:uppercase}
+.eye-r .s-tag::before,.eye-r .s-tag::after{content:"";width:56px;height:1px;background:linear-gradient(90deg,transparent,var(--gold))}
+.eye-r .s-tag::after{background:linear-gradient(270deg,transparent,var(--gold))}
+.eye-r .s-ess{display:block;margin:52px auto 0;max-width:760px;padding:0;background:none;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;text-align:center}
+.eye-r .s-ess::after{display:none}
+.eye-r .s-ess .lb{margin-bottom:12px}
+.eye-r .s-ess p{font-size:17px;font-weight:300;line-height:1.7;color:rgba(242,239,233,.72)}
+
+/* 7. что продаем */
+.sell{display:grid;grid-template-columns:7fr 5fr;gap:72px;align-items:center}
+.sell-v{position:relative;height:520px}
+.sell-v .portal{inset:0;border-radius:58% 42% 34% 66%/40% 34% 66% 60%}
+.sell .pre{font-size:clamp(20px,2vw,30px);font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);text-shadow:0 0 24px rgba(233,196,138,.45)}
+.sell h2{font-size:clamp(28px,3.2vw,52px);font-weight:200;letter-spacing:.18em;text-transform:uppercase;line-height:1.3;margin-top:16px}
+.sell h2 span{color:var(--mu)}
+.sell .gl{margin-top:40px;padding:26px 30px 30px}
+.sell .kf-h{font-size:clamp(20px,2vw,32px);font-weight:400;letter-spacing:.14em;text-transform:uppercase;line-height:1.3;color:var(--gold);text-shadow:0 0 30px rgba(233,196,138,.45);padding-bottom:18px;margin-bottom:18px;border-bottom:1px solid rgba(233,196,138,.35)}
+.sell .gl{background:none;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;padding-left:0;padding-right:0}
+.sell .gl::after{display:none}
+.sell .gl .q{font-size:clamp(19px,1.6vw,24px);font-weight:400;line-height:1.45;margin-top:12px}
+.sell .gl .txt{margin-top:14px;font-size:16px}
+
+.sell-v .sig{position:absolute;left:-30%;top:-20%;width:160%;height:140%;object-fit:cover;object-position:50% 50%;filter:brightness(.82) contrast(1.15);-webkit-mask-image:radial-gradient(ellipse 42% 46% at 50% 50%,#000 45%,transparent 100%);mask-image:radial-gradient(ellipse 42% 46% at 50% 50%,#000 45%,transparent 100%)}
+
+/* 8. как это работает */
+.hw{height:720vh;background:radial-gradient(900px 700px at 85% 20%,rgba(233,196,138,.1),transparent 60%),var(--bg)}
+.hw-in{position:sticky;top:0;height:100vh;height:100dvh;overflow:hidden}
+.hw-v{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.hw-in::before,.hw-in::after{content:"";position:absolute;left:0;right:0;height:22vh;z-index:2;pointer-events:none}
+.hw-in::before{top:0;background:linear-gradient(180deg,var(--bg),rgba(7,8,11,0))}
+.hw-in::after{bottom:0;background:linear-gradient(0deg,var(--bg),rgba(7,8,11,0))}
+.hw-sh{position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(7,8,11,0) 30%,rgba(7,8,11,.55) 100%)}
+.hw-ov{position:absolute;inset:0;display:flex}
+.hw-c{background:radial-gradient(ellipse at 45% 60%,rgba(7,8,11,.94) 0%,rgba(7,8,11,.78) 40%,rgba(7,8,11,0) 72%)}
+.hw-ov.p-bl{align-items:flex-end;justify-content:flex-start}
+.hw-ov.p-tr{align-items:flex-start;justify-content:flex-end}
+.hw-ov.p-br{align-items:flex-end;justify-content:flex-end}
+.hw-ov.p-tl{align-items:flex-start;justify-content:flex-start}
+.hw-c{max-width:700px;padding:130px 80px 100px 260px}
+.hw-ov.p-tr .hw-c,.hw-ov.p-br .hw-c{padding-left:80px}
+.hw-k{font-size:12px;font-weight:500;letter-spacing:.34em;text-transform:uppercase;color:var(--mu);margin-bottom:22px}
+.hw-k .cur{color:var(--gold)}
+.hw-h{font-size:clamp(34px,4vw,64px);font-weight:200;letter-spacing:.12em;text-transform:uppercase;line-height:1.1}
+.hw-p{font-size:clamp(17px,1.35vw,21px);font-weight:300;line-height:1.6;color:rgba(242,239,233,.82);margin-top:20px}
+.hw-fn{display:block;font-size:14px;line-height:1.4;margin-top:16px;padding-top:12px;border-top:1px solid var(--ln);color:var(--mu)}
+.hw-c>*{opacity:0;transform:translateY(20px)}
+.hw-c.act>*{opacity:1;transform:none;transition:opacity .7s var(--ease),transform .7s var(--ease)}
+.hw-c.act>:nth-child(2){transition-delay:.12s}.hw-c.act>:nth-child(3){transition-delay:.24s}.hw-c.act>:nth-child(4){transition-delay:.36s}
+.hw-rail{position:absolute;left:56px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:6px;z-index:3}
+.hw-rail::before{content:"";position:absolute;left:4px;top:12px;bottom:12px;width:1px;background:repeating-linear-gradient(transparent 0 5px,rgba(242,239,233,.35) 5px 10px)}
+.hw-rail button{position:relative;display:flex;align-items:center;gap:16px;font-size:12px;font-weight:500;letter-spacing:.24em;text-transform:uppercase;color:var(--mu);padding:7px 0;transition:color .3s}
+.hw-rail button i{width:9px;height:9px;border-radius:50%;border:1px solid rgba(242,239,233,.6);background:var(--bg);flex:none;transition:.3s}
+.hw-rail button span{opacity:0;transform:translateX(-6px);transition:.3s;white-space:nowrap}
+.hw-rail:hover button span,.hw-rail button.on span{opacity:1;transform:none}
+.hw-rail button.on{color:var(--tx)}
+.hw-rail button.on i{background:var(--gold);border-color:var(--gold);box-shadow:0 0 14px var(--gold)}
+.hw-rail button.done i{background:rgba(242,239,233,.6);border-color:transparent}
+.hw-bar{position:absolute;left:0;bottom:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold));width:0}
+
+/* 9. итого */
+.fc{display:grid;grid-template-columns:5fr 7fr;gap:72px;align-items:center}
+.fc-v{position:relative;height:500px}
+.fc-v .portal{inset:0;border-radius:40% 60% 50% 50%/56% 42% 58% 44%}
+.fc .h2{text-align:left;margin-top:0}
+.fc .ln{margin:24px 0 0}
+.fc .big{margin-top:32px;font-weight:300}
+
+/* итого: лестница роста */
+.gr{position:relative;display:grid;grid-template-columns:repeat(3,1fr);gap:22px;align-items:end;padding-top:30px}
+.gr-path{position:absolute;left:0;right:0;top:-20px;width:100%;height:200px;pointer-events:none}
+.gr-path path{fill:none;stroke:rgba(242,239,233,.45);stroke-width:1.2;stroke-dasharray:5 8;animation:dash 6s linear infinite}
+.gr-s{z-index:1;padding:28px 28px 32px;margin-bottom:calc(var(--up) * 60px)}
+.gr-n{font-size:clamp(40px,4vw,64px);font-weight:200;color:var(--gold);line-height:1;letter-spacing:.02em}
+.gr-s p{font-size:clamp(18px,1.5vw,22px);font-weight:300;line-height:1.5;margin-top:18px}
+.gr-f{max-width:900px;margin:56px auto 0;text-align:center;font-size:clamp(18px,1.6vw,24px);font-weight:400;line-height:1.5;padding:22px 34px;border-radius:28px;color:var(--tx);box-shadow:inset 0 0 0 1px rgba(233,196,138,.5);background:linear-gradient(140deg,rgba(233,196,138,.14),rgba(233,196,138,.03))}
+
+/* 10. ценность */
+.va-h .va-a{display:block;font-size:.55em;font-weight:300;letter-spacing:.24em;color:var(--mu)}
+.va-h .va-b{display:block;font-size:1.35em;font-weight:600;letter-spacing:.1em;margin-top:14px}
+.tl{position:relative;display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:10px}
+.tl-it{padding:30px 28px 32px}
+.tl-it .n{display:flex;align-items:center;gap:12px;font-size:11px;font-weight:600;letter-spacing:.3em;color:var(--mu)}
+.tl-it .n::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--gold);box-shadow:0 0 14px var(--gold)}
+.tl-it h4{font-size:20px;font-weight:300;letter-spacing:.2em;text-transform:uppercase;margin-top:22px}
+.tl-it p{font-size:17px;font-weight:300;line-height:1.6;color:rgba(242,239,233,.82);margin-top:12px}
+.tl-path{display:block;width:100%;height:30px;margin:0 0 18px}
+.tl-path path{fill:none;stroke:rgba(242,239,233,.45);stroke-width:1.2;stroke-dasharray:5 8;animation:dash 6s linear infinite}
+
+/* ценность: таймлайн */
+.vt{position:relative;display:grid;grid-template-columns:repeat(3,1fr);gap:48px;margin-top:20px;padding-top:44px}
+.vt-line{position:absolute;left:0;right:0;top:8px;height:1px;background:rgba(242,239,233,.14)}
+.vt-line i{display:block;height:100%;width:0;background:linear-gradient(90deg,rgba(233,196,138,.2),var(--gold),rgba(233,196,138,.2));box-shadow:0 0 12px rgba(233,196,138,.6);transition:width 2.4s var(--ease) .3s}
+.in .vt-line i{width:100%}
+.vt-it{position:relative}
+.vt-dot{position:absolute;top:-44px;left:0;width:17px;height:17px;border-radius:50%;background:var(--bg);border:1.5px solid var(--gold);transition:background .5s,box-shadow .5s;transition-delay:calc(var(--n) * .8s + .6s)}
+.in .vt-dot{background:var(--gold);box-shadow:0 0 18px var(--gold)}
+.vt-it .n{font-size:12px;font-weight:600;letter-spacing:.3em;color:var(--mu)}
+.vt-it h4{font-size:22px;font-weight:300;letter-spacing:.2em;text-transform:uppercase;margin-top:12px}
+.vt-it p{font-size:17px;font-weight:300;line-height:1.6;color:rgba(242,239,233,.82);margin-top:12px;max-width:360px}
+@media (max-width:760px){
+  .vt{grid-template-columns:1fr;gap:34px;padding:0 0 0 40px}
+  .vt-line{left:8px;right:auto;top:0;bottom:0;width:1px;height:auto}
+  .vt-line i{width:100%!important;height:0;transition:height 2.4s var(--ease) .3s}
+  .in .vt-line i{height:100%}
+  .vt-dot{top:2px;left:-40px}
+}
+
+/* 11. definition of done */
+.dod{max-width:1080px;margin:0 auto;text-align:center}
+.dod .big{font-size:clamp(24px,2.6vw,42px);font-weight:200;line-height:1.38;margin-top:30px}
+.dod-x{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:14px;margin-top:44px}
+.px{position:relative;font-size:16px;font-weight:400;letter-spacing:.04em;padding:14px 26px;border-radius:999px;color:var(--mu);box-shadow:inset 0 0 0 1px rgba(255,255,255,.18)}
+.px::after{content:"";position:absolute;left:14px;right:14px;top:50%;height:1px;background:var(--gold);transform:scaleX(0);transform-origin:left;transition:transform .7s var(--ease)}
+.in .px::after{transform:scaleX(1);transition-delay:calc(var(--d,0s) + .5s)}
+.dod-x .tx{font-size:16px;font-weight:500;letter-spacing:.04em}
+
+/* 12. demo day */
+.dd-bar{display:flex;gap:4px;height:60px;margin-top:18px}
+.dd-seg{border-radius:14px;transform:scaleX(0);transform-origin:left;transition:transform .7s var(--ease),filter .3s;display:flex;align-items:center;padding:0 14px;font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;white-space:nowrap;overflow:hidden}
+.in .dd-seg{transform:none;transition-delay:calc(var(--i) * .25s + .4s)}
+.dd-seg.hl{filter:brightness(1.3)}
+.dd-leg{margin-top:22px}
+.dd-li{display:grid;grid-template-columns:22px 170px 1fr;gap:16px;align-items:center;padding:13px 0;border-top:1px solid var(--ln);transition:padding .35s}
+.dd-li i{width:12px;height:12px;border-radius:50%}
+.dd-li b{font-size:16px;font-weight:600}
+.dd-li span{font-size:16px;font-weight:300;color:rgba(242,239,233,.82)}
+.dd-li.hl{padding-left:10px}
+.dd-two{display:grid;grid-template-columns:1fr 1fr;gap:0;margin-top:48px;border-top:1px solid var(--ln)}
+.dd-a,.dd-b{padding:32px 40px 8px 0}
+.dd-b{padding-left:40px;padding-right:0;border-left:1px solid var(--ln)}
+.dd-a p{font-size:clamp(20px,1.7vw,26px);font-weight:300;line-height:1.5;color:var(--tx)}
+.dd-bs{font-size:clamp(20px,1.7vw,26px);font-weight:300;line-height:1.3;margin-top:12px}
+.dd-bt{font-size:16px;font-weight:300;line-height:1.6;color:rgba(242,239,233,.7)}
+.ach{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 16px}
+.ach span{font-size:14px;font-weight:400;padding:8px 15px;border-radius:999px;color:var(--gold);box-shadow:inset 0 0 0 1px rgba(233,196,138,.55);background:rgba(233,196,138,.06)}
+
+/* 13. тарифы */
+.tr{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.tc{overflow:hidden;transition:transform .45s var(--ease),box-shadow .45s}
+.tc:hover{transform:translateY(-6px);box-shadow:inset 0 0 0 1px rgba(233,196,138,.6),0 40px 70px -30px rgba(0,0,0,.9)}
+.tc-h{padding:24px 22px 18px;border-bottom:1px solid var(--ln);min-height:134px}
+.tc-h b{font-size:18px;font-weight:300;letter-spacing:.3em;text-transform:uppercase}
+.tc-h p{font-size:16px;font-weight:300;line-height:1.4;color:var(--mu);margin-top:10px}
+.tc ul{list-style:none}
+.tc li{height:70px;display:flex;align-items:center;gap:12px;padding:0 22px;border-bottom:1px solid var(--ln)}
+.tc li.r5{height:132px}
+.tc li.r0{height:112px}
+.tc li i{flex:none;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:11px;font-weight:700;color:var(--bg);background:linear-gradient(140deg,#fff,var(--gold));transform:scale(0);transition:transform .45s var(--ease)}
+.in .tc li i{transform:scale(1);transition-delay:calc(var(--k) * 40ms + .5s)}
+.tc li.no i{background:transparent;color:var(--mu);box-shadow:inset 0 0 0 1px rgba(242,239,233,.3)}
+.tc li .t{font-size:16px;font-weight:500;line-height:1.25}
+.tc li .t small{display:block;font-size:16px;font-weight:300;color:var(--mu);margin-top:2px;line-height:1.25}
+.tc li.no .t{opacity:.38}
+.tc-p{padding:20px 22px 26px;min-height:136px}
+.tc-p .pl{font-size:11px;font-weight:600;letter-spacing:.3em;text-transform:uppercase;color:var(--mu)}
+.tc-p .pb{font-size:30px;font-weight:300;letter-spacing:.02em;margin-top:10px;white-space:nowrap;color:var(--gold)}
+.tc-p .ps{font-size:16px;font-weight:300;line-height:1.45;color:var(--mu);margin-top:6px}
+.tr-note{margin:26px auto 0;display:flex;width:max-content;max-width:100%;align-items:center;gap:12px;font-size:16px;font-weight:400;letter-spacing:.04em;padding:13px 22px;border-radius:999px;box-shadow:inset 0 0 0 1px rgba(233,196,138,.5);background:rgba(233,196,138,.06)}
+.tr-note::before{content:"!";flex:none;width:20px;height:20px;border-radius:50%;background:var(--gold);color:var(--bg);display:grid;place-items:center;font-size:12px;font-weight:700}
+
+/* 14. курс ↔ клуб */
+.ccw{padding:12px 30px 18px}
+.cc-h,.cc-r{display:grid;grid-template-columns:1fr 84px 1fr;align-items:center;gap:0 20px}
+.cc-h{padding:18px 0 16px;border-bottom:1px solid rgba(242,239,233,.3)}
+.cc-h div{font-size:13px;font-weight:500;letter-spacing:.32em;text-transform:uppercase}
+.cc-h .l{color:var(--mu)}
+.cc-h .m{text-align:center;color:var(--gold);font-size:18px;letter-spacing:0;animation:sw 3s ease-in-out infinite}
+@keyframes sw{0%,100%{transform:translateX(-5px)}50%{transform:translateX(5px)}}
+.cc-r{padding:20px 0;border-bottom:1px solid var(--ln)}
+.cc-r:last-child{border-bottom:0}
+.cc-r .l{font-size:17px;font-weight:300;line-height:1.5;color:var(--mu)}
+.cc-r .r{font-size:17px;font-weight:500;line-height:1.5}
+.cc-r .m{text-align:center;color:var(--mu)}
+
+/* 15. LTV */
+.lt{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.lt .gl{padding:30px 30px 34px}
+.fl{display:flex;align-items:center;gap:12px}
+.fl span{font-size:12px;font-weight:500;letter-spacing:.2em;text-transform:uppercase;padding:9px 16px;border-radius:999px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.22);white-space:nowrap}
+.fl span.cl{color:var(--bg);background:linear-gradient(140deg,#fff,var(--gold));box-shadow:none}
+.fl svg{flex:1;height:14px;min-width:30px;overflow:visible}
+.fl .dash{stroke-dasharray:5 7;animation:dash 4s linear infinite}
+.lt h3{font-size:18px;font-weight:400;letter-spacing:.12em;text-transform:uppercase;margin-top:30px;line-height:1.4}
+.lt p{font-size:17px;font-weight:300;line-height:1.65;color:rgba(242,239,233,.82);margin-top:14px}
+
+/* 16. следующие шаги */
+.meme{display:block;width:min(480px,100%);height:auto;margin:72px auto 0}
+
+.ns{list-style:none;max-width:1000px;margin:0 auto}
+.ns li{display:grid;grid-template-columns:64px 1fr;gap:16px;padding:20px 22px;border-radius:20px;transition:background .45s,box-shadow .45s}
+.ns li+li{margin-top:2px}
+.ns .n{font-size:12px;font-weight:600;letter-spacing:.3em;color:var(--mu);padding-top:6px}
+.ns .t{font-size:clamp(17px,1.4vw,21px);font-weight:300;line-height:1.45}
+.ns li.on{background:linear-gradient(160deg,rgba(255,255,255,.08),rgba(255,255,255,.02));box-shadow:inset 0 0 0 1px rgba(233,196,138,.45)}
+.ns li.on .n{color:var(--gold)}
+.mets{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.mets span{font-size:13px;font-weight:500;letter-spacing:.04em;padding:7px 13px;border-radius:999px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.2);opacity:0;transform:translateY(8px);transition:opacity .5s,transform .5s}
+.in .mets span{opacity:.9;transform:none;transition-delay:calc(var(--m) * 60ms + .6s)}
+.foot{padding:40px 40px 50px;display:flex;justify-content:space-between;font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:var(--mu);border-top:1px solid var(--ln)}
+
+/* планшет */
+@media (max-width:1100px){
+  .sgw{padding:0;background:none;box-shadow:none;backdrop-filter:none}
+  .sgw::after{display:none}
+  .sg{display:block}
+  .sg-row.sg-head{display:none}
+  .sg-row{display:block;border-radius:24px;padding:8px 20px 12px;margin-bottom:14px;background:linear-gradient(160deg,rgba(255,255,255,.075),rgba(255,255,255,.018));box-shadow:inset 0 0 0 1px rgba(255,255,255,.13)}
+  .sg-c{display:grid;gap:4px;padding:12px 0}
+  .sg-c::before{content:attr(data-l);font-size:11px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--mu)}
+  .sg-c.name{font-size:21px;padding-top:14px}
+  .sg-c.name::before{display:none}
+  .sg-row:last-child .sg-c{border-bottom:1px solid var(--ln)}
+  .sg-c:last-child{border-bottom:0!important}
+  .ba,.tr{grid-template-columns:1fr 1fr}
+  .lad{grid-template-columns:1fr;max-width:640px;margin:0 auto}
+  .stp-c{margin-bottom:0}
+  .lad-path{display:none}
+  .gr{grid-template-columns:1fr;max-width:640px;margin:0 auto}
+  .gr-s{margin-bottom:0}
+  .gr-path{display:none}
+}
+
+/* телефон: окна сверху, текст под ними, без наложений */
+@media (max-width:760px){
+  .hud-brand{top:24px;left:18px}
+  .hud-lang{top:12px;right:12px}
+  .hud-lang button{min-height:44px;min-width:46px}
+  .wrap,#seg .wrap{padding:96px 16px}
+  .hd{margin-bottom:40px}
+  .h2{font-size:22px;letter-spacing:.18em}
+  .hero{min-height:0;height:auto;padding:96px 16px 110px}
+  .hero .portal{position:relative;inset:auto;display:block}
+  .hv{position:relative;height:300px;margin-top:10px}
+  .hv .portal{position:absolute}
+  .p1{width:78vw;height:200px;top:0;right:-6vw;left:auto;bottom:auto}
+  .p2{width:46vw;height:190px;top:110px;left:-4vw;bottom:auto}
+  .p3{display:none!important}
+  .route,.pin{display:none}
+  .mid{position:relative;left:auto;top:auto;transform:none;width:100%;margin-top:40px}
+  .mid h1{font-size:36px;letter-spacing:.2em;padding-left:.2em}
+  .cap.bl{left:16px;bottom:40px}
+  .cap.br{display:none}
+  .pain,.sell,.fc{grid-template-columns:1fr;gap:36px}
+  .pain-v,.fc-v{height:300px}
+  .sell-v{height:280px;order:-1}
+  .ba{grid-template-columns:1fr}
+  .na-sub{flex-direction:column}
+  .na-hd .arw{transform:rotate(90deg)}
+  .bac .ar{margin:16px 0}
+  .sol,.lt,.dd-two,.tl{grid-template-columns:1fr}
+  .dd-a{padding:24px 0 0}
+  .dd-b{padding:24px 0 0;border-left:0;border-top:1px solid var(--ln);margin-top:24px}
+  .s-main{font-size:26px;letter-spacing:.06em}
+  .s-tag{border-radius:24px;padding:14px 20px}
+  .s-ess{grid-template-columns:1fr;gap:12px;margin-top:44px;padding:22px 20px}
+  .eye-r .s-main{font-size:22px}
+  .eye-r .s-ess{margin-top:32px;padding:0}
+  .eye-r .s-tag{letter-spacing:.16em;gap:10px;flex-wrap:wrap;justify-content:center}
+  .eye-r .s-tag::before,.eye-r .s-tag::after{width:24px}
+  .eye-r .s-ess p{font-size:16px;line-height:1.5}
+  .eye-r .s-tag{font-size:16px;margin-top:22px;letter-spacing:.12em}
+  .eye-c{padding:70px 16px 24px}
+  .tl-path{display:none}
+  .km .gl{margin-top:36px;padding:22px 20px 24px}
+  .sell h2{font-size:26px}
+  .hw-ov,.hw-ov.p-tr,.hw-ov.p-br,.hw-ov.p-tl,.hw-ov.p-bl{align-items:flex-end;justify-content:flex-start}
+  .hw-c,.hw-ov.p-tr .hw-c,.hw-ov.p-br .hw-c{padding:24px 16px 124px;max-width:100%;background:linear-gradient(0deg,rgba(7,8,11,.97) 0%,rgba(7,8,11,.9) 70%,rgba(7,8,11,0))!important}
+  .hw-h{font-size:30px;letter-spacing:.08em}
+  .hw-fn{font-size:16px}
+  .hw-rail{left:4px;top:auto;bottom:64px;transform:none;flex-direction:row;gap:0}
+  .hw-rail::before{display:none}
+  .hw-rail button span{display:none}
+  .hw-rail button{padding:0;min-width:44px;min-height:44px;justify-content:center}
+  .dd-bar{height:44px}
+  .dd-seg{font-size:0;padding:0}
+  .dd-li{grid-template-columns:18px 1fr;gap:4px 12px}
+  .dd-li span{grid-column:2}
+  .tr{grid-template-columns:1fr}
+  .tc li{height:auto;min-height:56px;padding:10px 18px}
+  .tc li.r5{height:auto}
+  .tc li.r0{height:auto}
+  .tc-h,.tc-p{min-height:0}
+  .tr-note{width:auto}
+  .ccw{padding:6px 18px 10px}
+  .cc-h,.cc-r{grid-template-columns:1fr 1fr;gap:14px}
+  .cc-h .m,.cc-r .m{display:none}
+  .cc-r .l,.cc-r .r{font-size:16px}
+  .fl span{white-space:normal}
+  .ns li{grid-template-columns:40px 1fr;padding:16px 14px}
+  .foot{padding:30px 16px;flex-direction:column;gap:10px}
+}
+</style>
+</head>
+<body>
+<div class="hud-brand" data-i="brand"></div>
+<div class="hud-lang"><button data-l="ru">RU</button><button data-l="uk">UA</button></div>
+<div class="hud-prog" id="prog"></div>
+
+<!-- 1. Первый экран -->
+<section class="sec hero hero2">
+  <div class="pz rv"><video data-src="IL" muted loop playsinline></video><i class="pz-noise"></i><i class="pz-grad"></i></div>
+  <div class="mid2">
+    <div class="k rv" data-i="s1e"></div>
+    <h1 class="rv" style="--d:.12s" data-i="s1t"></h1>
+    <div class="ln rv" style="--d:.2s"></div>
+    <p class="rv" style="--d:.28s" data-i="s1s"></p>
+    <button class="go rv" style="--d:.4s" data-go><span class="go-t" data-i="s1b"></span><svg class="go-v" viewBox="0 0 40 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4l16 12L36 4"/></svg></button>
+  </div>
+</section>
+
+<!-- 2. Сегменты ЦА -->
+<section class="sec" id="seg"><div class="glow g" style="width:900px;height:700px;left:-250px;top:0"></div><div class="wrap">
+  <div class="hd"><div class="k rv" data-i="segE"></div><h2 class="h2 rv" style="--d:.1s" data-i="segT"></h2><p class="sub rv" style="--d:.15s" data-i="segS"></p><div class="ln rv" style="--d:.2s"></div></div>
+  <div class="lad" id="sg"></div>
+</div></section>
+
+<!-- 3. Одна боль -->
+<section class="sec pain-sec"><video class="pain-bg" data-src="CG" muted loop playsinline></video><i class="pain-dim"></i><div class="wrap">
+  <div class="pain">
+    <div>
+      <h2 class="h2 rv" data-i="paT"></h2><div class="ln rv" style="--d:.1s"></div>
+      <p class="big rv" style="--d:.2s" data-i="paB"></p>
+      <div class="gl rv" style="--d:.35s"><div class="lb" style="font-size:16px;letter-spacing:.14em" data-i="jtL"></div><p class="wr" id="paQ"></p></div>
+      <div class="ins rv" style="--d:.5s"><div class="ins-k" data-i="insL"></div><p data-i="insT"></p></div>
+    </div>
+  </div>
+</div></section>
+
+<!-- 4. Было → стало: карточки сменяют друг друга при прокрутке -->
+<section class="sec ba-sec" id="ba"><div class="ba-stick"><div class="glow g" style="width:900px;height:600px;left:-200px;top:-100px"></div><div class="wrap ba-wrap">
+  <div class="hd na-hd"><h2 class="h2 rv" data-i="naT"></h2><p class="na-sub rv" style="--d:.1s" data-i="naG"></p><div class="ln rv" style="--d:.15s"></div></div>
+  <div class="ba rv" style="--d:.2s" id="baRow">
+    <div class="gl bac on" data-k="0">
+      <div class="bac-mini"><span class="bac-n">01</span><span class="bac-v" data-i="na1a"></span></div>
+      <div class="bac-full"><div class="bac-n big">01</div><div class="lb" data-i="wasL"></div><p class="was" data-i="na1a"></p><div class="ar">↓</div><div class="lb nowl" data-i="nowL"></div><p class="now" data-i="na1b"></p></div>
+    </div>
+    <div class="gl bac" data-k="1">
+      <div class="bac-mini"><span class="bac-n">02</span><span class="bac-v" data-i="na2a"></span></div>
+      <div class="bac-full"><div class="bac-n big">02</div><div class="lb" data-i="wasL"></div><p class="was" data-i="na2a"></p><div class="ar">↓</div><div class="lb nowl" data-i="nowL"></div><p class="now" data-i="na2b"></p></div>
+    </div>
+    <div class="gl bac" data-k="2">
+      <div class="bac-mini"><span class="bac-n">03</span><span class="bac-v" data-i="na3a"></span></div>
+      <div class="bac-full"><div class="bac-n big">03</div><div class="lb" data-i="wasL"></div><p class="was" data-i="na3a"></p><div class="ar">↓</div><div class="lb nowl" data-i="nowL"></div><p class="now" data-i="na3b"></p></div>
+    </div>
+    <div class="gl bac" data-k="3">
+      <div class="bac-mini"><span class="bac-n">04</span><span class="bac-v" data-i="na4a"></span></div>
+      <div class="bac-full"><div class="bac-n big">04</div><div class="lb" data-i="wasL"></div><p class="was" data-i="na4a"></p><div class="ar">↓</div><div class="lb nowl" data-i="nowL"></div><p class="now" data-i="na4b"></p></div>
+    </div>
+  </div>
+</div></div></section>
+
+<!-- 5. Ключевой месседж -->
+<section class="sec km-sec"><video class="km-bg" data-src="AS" muted loop playsinline></video><i class="km-dim"></i><div class="wrap">
+  <div class="km">
+    <div class="k rv" data-i="kmL"></div><div class="ln rv" style="--d:.1s"></div>
+    <p class="big km-p rv" style="--d:.15s" id="kmP"><span class="kl" data-i="km0"></span><b class="kl"><span data-i="km1"></span>,</b><b class="kl"><span data-i="km2"></span>,</b><b class="kl"><span data-i="km3"></span>,</b><b class="kl"><span data-i="km4"></span></b><span class="kl" data-i="km5"></span></p>
+    <div class="gl rv" style="--d:.8s"><div class="lb" data-i="prL"></div><p class="txt" data-i="prT"></p></div>
+  </div>
+</div></section>
+
+<!-- 6. Решение -->
+<section class="sec eye-sec" id="eye"><div class="eye-in">
+  <video class="eye-v" id="eyev" src="video/eye-scroll.mp4" muted playsinline preload="auto"></video><i class="eye-blk" id="eyeB"></i>
+  <div class="eye-c">
+    <div class="eye-h" id="eyeH"><h2 class="h2" data-i="soE"></h2><div class="ln"></div></div>
+    <div class="sol2 eye-r" id="eyeR">
+      <p class="s-main" data-i="so2"></p>
+      <p class="s-tag" data-i="so3"></p>
+      <div class="gl s-ess"><div class="lb" data-i="so1l"></div><p data-i="so1"></p></div>
+    </div>
+  </div>
+</div></section>
+
+<!-- 7. Что продаем -->
+<section class="sec"><div class="wrap">
+  <div class="sell">
+    <div>
+      <p class="pre rv" data-i="seE"></p>
+      <h2 class="rv" style="--d:.1s" data-i="seT"></h2>
+      <div class="gl rv" style="--d:.3s"><div class="kf-h" data-i="seK"></div><p class="q" data-i="seQ"></p><p class="txt" data-i="seP"></p></div>
+    </div>
+    <div class="sell-v rv" style="--d:.2s"><video class="sig" data-src="FS" muted loop playsinline></video></div>
+  </div>
+</div></section>
+
+<!-- 8. Как это работает -->
+<section class="sec hw" id="how">
+  <div class="hw-in">
+    <video class="hw-v" id="hwv" src="video/dna-scroll.mp4" muted playsinline preload="auto"></video>
+    <div class="hw-sh"></div>
+    <div class="hw-ov p-bl" id="hwo"><div class="hw-c" id="hwc"></div></div>
+    <div class="hw-rail" id="hwr"></div>
+    <div class="hw-bar" id="hwb"></div>
+  </div>
+</section>
+
+<!-- 9. Итого -->
+<section class="sec"><div class="wrap">
+  <div class="hd"><h2 class="h2 rv" data-i="fcT"></h2><div class="ln rv" style="--d:.1s"></div></div>
+  <div class="gr">
+    <div class="gl gr-s rv" style="--d:.2s;--up:0"><div class="gr-n">01</div><p data-i="fc1"></p></div>
+    <div class="gl gr-s rv" style="--d:.4s;--up:1"><div class="gr-n">02</div><p data-i="fc2"></p></div>
+    <div class="gl gr-s rv" style="--d:.6s;--up:2"><div class="gr-n">03</div><p data-i="fc3"></p></div>
+  </div>
+  <p class="gr-f rv" style="--d:.85s" data-i="fc4"></p>
+</div></section>
+
+<!-- 10. Ценность клуба -->
+<section class="sec"><div class="glow g" style="width:900px;height:600px;left:-200px;top:100px"></div><div class="wrap">
+  <div class="hd"><h2 class="h2 va-h rv" data-i="vaT"></h2><div class="ln rv" style="--d:.1s"></div><p class="sub rv" style="--d:.15s;text-transform:uppercase;letter-spacing:.32em;font-size:11px" data-i="vaHow"></p></div>
+  <div class="vt">
+    <div class="vt-line"><i></i></div>
+    <div class="vt-it rv" style="--d:.3s;--n:0"><span class="vt-dot"></span><div class="n">01</div><h4 data-i="va1h"></h4><p data-i="va1"></p></div>
+    <div class="vt-it rv" style="--d:.55s;--n:1"><span class="vt-dot"></span><div class="n">02</div><h4 data-i="va2h"></h4><p data-i="va2"></p></div>
+    <div class="vt-it rv" style="--d:.8s;--n:2"><span class="vt-dot"></span><div class="n">03</div><h4 data-i="va3h"></h4><p data-i="va3"></p></div>
+  </div>
+</div></section>
+
+<!-- 11. Definition of Done -->
+<section class="sec"><div class="glow b" style="width:1000px;height:700px;left:50%;margin-left:-500px;top:0"></div><div class="wrap">
+  <div class="dod">
+    <div class="k rv">Definition of Done</div><div class="ln rv" style="--d:.1s"></div>
+    <p class="big rv" style="--d:.2s" data-i="dodT"></p>
+    <div class="dod-x"><span class="px rv" style="--d:.35s" data-i="dodA"></span><span class="px rv" style="--d:.5s" data-i="dodB"></span><span class="tx rv" style="--d:.65s" data-i="dodC"></span></div>
+  </div>
+</div></section>
+
+<!-- 12. AI Demo Day -->
+<section class="sec"><div class="glow g" style="width:900px;height:600px;right:-200px;top:0"></div><div class="wrap">
+  <div class="hd"><h2 class="h2 rv" data-i="ddT"></h2><p class="sub rv" style="--d:.1s" data-i="ddO"></p><div class="ln rv" style="--d:.15s"></div></div>
+  <div class="lb rv" data-i="ddS"></div>
+  <div class="dd-bar" id="ddBar"></div>
+  <div class="dd-leg rv" style="--d:.3s" id="ddLeg"></div>
+  <div class="dd-two">
+    <div class="dd-a rv" style="--d:.4s"><p data-i="ddX"></p></div>
+    <div class="dd-b rv" style="--d:.5s"><div class="lb" data-i="ddPl"></div><p class="dd-bs" data-i="ddPs"></p><div class="ach" id="ach"></div><p class="dd-bt" data-i="ddP"></p></div>
+  </div>
+</div></section>
+
+<!-- 13. Тарифы -->
+<section class="sec"><div class="glow g" style="width:1100px;height:700px;left:50%;margin-left:-550px;top:200px"></div><div class="wrap">
+  <div class="hd"><div class="k rv" data-i="trE"></div><h2 class="h2 rv" style="--d:.1s" data-i="trT"></h2><div class="ln rv" style="--d:.15s"></div></div>
+  <div class="tr" id="tr"></div>
+  <div class="tr-note rv" style="--d:.5s" data-i="trN"></div>
+</div></section>
+
+<!-- 14. Курс ↔ клуб -->
+<section class="sec"><div class="wrap">
+  <div class="hd"><h2 class="h2 rv" data-i="ccT"></h2><div class="ln rv" style="--d:.1s"></div></div>
+  <div class="gl ccw rv" style="--d:.2s">
+    <div class="cc-h"><div class="l" data-i="ccL"></div><div class="m">↔</div><div data-i="ccR"></div></div>
+    <div class="cc-r"><p class="l" data-i="cc1a"></p><span class="m">→</span><p class="r" data-i="cc1b"></p></div>
+    <div class="cc-r"><p class="l" data-i="cc2a"></p><span class="m">→</span><p class="r" data-i="cc2b"></p></div>
+    <div class="cc-r"><p class="l" data-i="cc3a"></p><span class="m">→</span><p class="r" data-i="cc3b"></p></div>
+    <div class="cc-r"><p class="l" data-i="cc4a"></p><span class="m">→</span><p class="r" data-i="cc4b"></p></div>
+  </div>
+</div></section>
+
+<!-- 15. LTV и точки входа -->
+<section class="sec"><div class="glow b" style="width:900px;height:600px;left:-200px;top:0"></div><div class="wrap">
+  <div class="hd"><h2 class="h2 rv" data-i="ltT"></h2><div class="ln rv" style="--d:.1s"></div></div>
+  <div class="lt">
+    <div class="gl rv" style="--d:.15s"><div class="fl"><span data-i="ltA1"></span><svg viewBox="0 0 100 14" preserveAspectRatio="none"><line class="dash" x1="0" y1="7" x2="92" y2="7" stroke="#e9c48a" stroke-width="1.2"/><path d="M90 2l9 5-9 5z" fill="#e9c48a"/></svg><span class="cl" data-i="ltC"></span></div><h3 data-i="ltAh"></h3><p data-i="ltAp"></p></div>
+    <div class="gl rv" style="--d:.3s"><div class="fl"><span data-i="ltB1"></span><svg viewBox="0 0 100 14" preserveAspectRatio="none"><line class="dash" x1="0" y1="7" x2="92" y2="7" stroke="#e9c48a" stroke-width="1.2"/><path d="M90 2l9 5-9 5z" fill="#e9c48a"/></svg><span class="cl" data-i="ltC"></span></div><h3 data-i="ltBh"></h3><p data-i="ltBp"></p></div>
+  </div>
+</div></section>
+
+<!-- 16. Следующие шаги -->
+<section class="sec" id="next-steps"><div class="glow g" style="width:1000px;height:700px;left:50%;margin-left:-500px;top:100px"></div><div class="wrap">
+  <div class="hd"><div class="k rv" data-i="nsE"></div><h2 class="h2 rv" style="--d:.1s" data-i="nsT"></h2><div class="ln rv" style="--d:.15s"></div></div>
+  <ol class="ns rv" style="--d:.2s" id="ns"></ol>
+  <img class="meme rv" style="--d:.4s" src="img/meme.png" alt="">
+</div></section>
+<footer class="foot"><span data-i="brand"></span><span data-i="s1e"></span></footer>
+
+<script>
+const VS={FS:'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260723_145606_ab143199-b593-4941-bb1b-9afca215416b.mp4',AS:'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260328_115001_bcdaa3b4-03de-47e7-ad63-ae3e392c32d4.mp4',SG:'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260806_133255_956f653f-5d80-4b06-abd5-0f46c98b60fa.mp4',SH1:'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260513_220333_48163edc-995f-4513-9f44-48dbb07a7329.mp4',SH2:'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260513_221040_e6ba7c5a-864e-46e9-871e-341a176a7e3e.mp4',SH3:'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260513_221104_fb538584-5b87-495f-952e-09ddd5a1792a.mp4',PZ:'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260405_170732_8a9ccda6-5cff-4628-b164-059c500a2b41.mp4',NP:'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260912_104303_0c6d60b2-9353-408e-9449-585108a22fb5.mp4',
+ IL:'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260808_112712_da9d53df-6d27-4b12-bdf6-aa9dc2622bdf.mp4',
+ CG:'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260514_135830_bb6491d1-9b66-4aec-9722-13b4dfe3fb46.mp4'};
+const METS=["North Star","7-day activation","30-day implementation rate","Event engagement","Peer usefulness","Monthly retention","Renewal","MRR-equivalent","ARPA","Contribution margin","SLA","Time-to-first-value","Course → Club","Club → Course"];
+const DDW=[10,60,30,20], DDC=['#e9c48a','#b8956a','#8a7356','#5f5446'];
+const T={
+ru:{
+brand:"AI-Клуб 2.0",
+s1e:"Концепция",
+s1t:"AI-Клуб 2.0",
+s1s:"<span class=\"bur\">От AI-новостей и комьюнити</span><br><span class=\"emr\">– к измеримым трансформациям, полезным связям и долгосрочному клиентскому результату</span>",
+s1b:"Lets go",
+s1f1:"роли участников", s1f2:"шагов внедрения", s1f3:"уровня участия",
+
+segE:"Для кого",
+segT:"Сегменты ЦА",
+segS:"и разные треки внутри клуба",
+lSeg:"Сегмент", lInc:"Уровень дохода", lTask:"Главная задача", lHow:"Как решаем", lRes:"Типовой результат", lMeas:"Как измеряем прогресс", lSup:"Поддержка",
+seg:[
+ {n:"Специалист / «ремесленник»",i:"1,000–1,999&nbsp;$", st:"Первое внедрение",task:"Лучше и быстрее выполнять профессиональные задачи",how:"Выбираем простую рабочую задачу. Участник улучшает услугу, выполняет первый оплачиваемый проект с AI или высвобождает время на работу с клиентами.",res:"Работающий AI-workflow в своей профессии + пример результата",meas:"Один завершенный кейс с показателем до и после. Например, время на задачу, качество результата или первая оплаченная работа.",sup:"Шаблоны, практикумы, помощь Growth-менеджера"},
+ {n:"Руководитель / управленец",i:"2,000–4,999&nbsp;$", st:"Автоматизация + Повторяемый результат",task:"Внедрять AI в процессы команды, управлять изменением",how:"Превращаем удачный эксперимент в регулярный процесс или услугу. Работаем над средним чеком, маржой или числом задач, которые можно выполнить за то же время.",res:"Команда применяет SOP или workflow в рабочем цикле",meas:"Процесс повторен в нескольких рабочих циклах, а эффект виден в оплатах, марже или производительности.",sup:"Change-management разборы, обратная связь по процессу"},
+ {n:"Предприниматель / собственник",i:"5,000+&nbsp;$", st:"Масштабирование",task:"Повышать эффективность, управлять портфелем AI-проектов",how:"Передаем процесс команде, внедряем агентов в бизнес и оцениваем влияние на выручку, маржу или расходы.",res:"Запущен один процесс с владельцем и измеримой экономией времени/качества",meas:"Команда регулярно использует решение, а владелец процесса подтверждает эффект и стоимость поддержки. При подходящей бизнес-задаче участник может подать заявку на менторинг в Gold или Platinum.",sup:"Кейсы бизнеса и дорожная карта. Знакомства по запросу и Expert Peer Circle доступны в Silver, Gold и Platinum."}
+],
+
+paT:"Их всех объединяет одна боль", jtL:"JTBD: на какую работу клиент нанимает клуб",
+insL:"Инсайт", insT:"Сильнейшая боль – «я пробую AI, но моя работа или бизнес существенно не меняются»",
+paB:"AI-инструменты меняются быстрее, чем я успеваю их валидировать и оценивать.",
+paQ:"Помогите мне увидеть возможность, подобрать инструмент, безопасно внедрить его и проверить эффект с минимальной потерей времени.",
+soE:"Решение",
+so1l:"Суть", so1:"Клуб практиков, где участники внедряют AI в свою работу, находят способы увеличить доход или прибыль и переходят к более сложным задачам по мере подтвержденных результатов.",
+so2l:"Коротко", so2:"Регулярное внедрение AI<br>в работу/бизнес/профессиональную деятельность и жизнь",
+so3:"Зарабатывай больше. Трать времени меньше. Живи свободней",
+kmL:"Ключевой месседж",
+km0:"Ты не просто следишь за развитием AI, а", km1:"регулярно находишь возможности", km2:"внедряешь работающие решения", km3:"получаешь обратную связь", km4:"растешь (в деньгах и компетенциях)", km5:"вместе с людьми, которые делают то же самое",
+kmT:"Ты не просто следишь за развитием AI, а регулярно находишь возможности, внедряешь работающие решения, получаешь обратную связь и растешь (в деньгах и компетенциях) вместе с людьми, которые делают то же самое",
+prL:"Обещание без гарантий", prT:"Клуб обеспечивает инфраструктуру, экспертизу, обратную связь и практику для регулярных внедрений. Он не гарантирует доход, окупаемость или автоматизацию любого процесса.",   
+
+was:"Было", naT:"Что дает клуб", naG:"Целевое поведение ДО / ПОСЛЕ", wasL:"Без клуба", nowL:"В клубе", naL:"Сейчас / без клуба", naR:"После участия (целевое поведение)",
+na1a:"Читает много AI-новостей, не знает, чему верить", na1b:"Получает отфильтрованные, проверенные на практике решения и ограничения для безопасности",
+na2a:"Сохраняет промпты и идеи «на потом»", na2b:"Каждый месяц выбирает одну приоритетную задачу и выполняет спринт внедрения.",
+na3a:"Внедряет в одиночку, застревает", na3b:"Обращается к Growth-менеджеру и получает обратную связь в сообществе. В Silver, Gold и Platinum может запросить адресное знакомство.",
+na4a:"Не понимает, что изменилось", na4b:"Фиксирует базовую точку, результат, доказательство и решение о следующем шаге.",
+
+fcT:"Итого: лестница роста участника",
+fc1:"В клуб приходят со своей рабочей задачей", fc2:"и получают доступ к опыту людей, которые уже решали похожие кейсы.", fc3:"Через несколько циклов участник сам становится таким человеком для других.", fc4:"Эта взаимность связывает три трека и дает опытным участникам причину оставаться.",
+fcP:"В клуб приходят со своей рабочей задачей и получают доступ к опыту людей, которые уже решали похожие кейсы. Через несколько циклов участник сам становится таким человеком для других. Эта взаимность связывает три трека и дает опытным участникам причину оставаться.",
+
+vaT:"<span class=\"va-a\">Тут реализовываем ценность клуба:</span><span class=\"va-b\">расти в деньгах с нами</span>",
+vaHow:"Как",
+va1h:"Старт", va1:"Фиксируем текущий диапазон, задачу и исходный показатель.",
+va2h:"Реализация", va2:"Действует по построенному маршруту AI-агентом, создает результаты, прогресс трекает Growth-менеджер.",
+va3h:"Кейс", va3:"Кейсы с ростом заработка или прибыли разбираем на Demo Day с согласия автора.",
+
+seE:"Что именно продаем:",
+seT:"<span>не информацию,</span> а трансформацию",
+seK:"Killing feature:<br>система внедрения",
+seQ:"«Единица продукта» – это не эфир и не пост, а завершенный микроцикл изменения участника",
+seP:"Спринты входят во все тарифы. В спринте участник отмечает прогресс внедрения и фиксирует статус работы. Спринт для каждого участника формируется индивидуально, по его контексту.",
+
+hwT:"Как это работает",
+hwP:"На старте участник описывает AI-агенту свою ситуацию, рабочую задачу и/или желаемый результат, затем с помощью агента получает пошаговый план действий для достижения цели и при поддержке Growth-менеджера оценивает эффект по мере внедрения.",
+st:[["Запрос","Формулирует реальную задачу и/или желаемый результат."],["Варианты","AI-агент* строит варианты","*созданный и обученный по спец. Growth-методологии"],["Отбор","Выбирает подходящее решение с приемлемой сложностью и рисками"],["План","Определяет владельца задачи, доступы, границы эксперимента, исходную метрику."],["Практика","Реализует минимальный работающий AI-workflow в своей среде."],["Проверка","Тестирует на реальных допустимых данных, фиксирует ошибки и экономику."],["Демо-дей","Показывает, что действительно заработало; получает обратную связь."],["Рефлексия","Оставляет кейс в библиотеке, выбирает масштабирование или следующий спринт."]],
+
+dodT:"Внедрение используется хотя бы в одном реальном рабочем сценарии, имеет владельца, прошло проверку качества/рисков и сопровождается свидетельством результата.",
+dodA:"«Посмотрел эфир»", dodB:"«сохранил промпт»", dodC:"не считаются внедрением.",
+
+ccT:"Границы продукта: курс ↔ клуб",
+ccL:"Курс", ccR:"Клуб",
+cc1a:"Обучает фундаментальным компетенциям и инструментам", cc1b:"Помогает выбирать, внедрять, повторять и адаптировать решения",
+cc2a:"Программа, уровни и домашние задания", cc2b:"Практика, разборы и спринты на всех тарифах. Адресные знакомства доступны в Silver, Gold и Platinum.",
+cc3a:"Проверка освоения знаний и навыков", cc3b:"Доказательство применения в реальной работе",
+cc4a:"Нужен новичку без базовых компетенций", cc4b:"Полезен человеку с реальной задачей и готовностью действовать",
+
+ddT:"Центральный ритуал<br>AI Demo Day",
+ddO:"Проходит один раз в месяц, доступен всем.",
+ddX:"Тут мы собираем кейсы.<br>Эфиры иногда можем делать открытыми, вести трансляции – греть тех, кто сомневается.<br>Это очень гибкий и опциональный формат.",
+ddS:"Сценарий 120 минут",
+dd:[["10 минут","тренды и цель"],["4 × 15 минут","участники демонстрируют «было → сделали → что изменилось → ограничения»"],["30 минут","вопросы и разбор"],["20 минут","«лучшие уроки месяца»"]],
+ddPl:"Геймификация", ddPs:"Тут даем признание",
+ach:["«Практик месяца»","«Внедрение месяца»","«Самый полезный peer»"],
+ddP:"Ачивки – по проверяемым критериям, а не по громкости самопрезентации. Коммуникация кейсов только с разрешения автора и после проверки конфиденциальности.",
+
+trE:"Продукт клуба",
+trT:"Четыре уровня участия",
+trPl:"Рабочая цена",
+trN:"Мы не даем внутренних рассрочек, только банковская.",
+tiers:[
+ {n:"Bronze",w:"массовое комьюнити",pb:"990&nbsp;$",ps:"в год (≈ 83&nbsp;$ в месяц)"},
+ {n:"Silver",w:"для людей с первыми клиентами или бизнесом",pb:"2,990&nbsp;$",ps:"в год (≈ 249&nbsp;$ в месяц)"},
+ {n:"Gold",w:"для собственников и топ-менеджеров",pb:"10,000&nbsp;$",ps:"в год (≈ 833&nbsp;$ в месяц)"},
+ {n:"Platinum",w:"для владельцев среднего и крупного бизнеса",pb:"50,000&nbsp;$",ps:"в год (≈ 4,167&nbsp;$ в месяц)"}
+],
+feat:[
+ [["AI Radar","дайджест:<br>· новости и тренды<br>· инструменты и кейсы"],[1,1,1,1]],
+ [["Club","· комьюнити и нетворкинг"],[1,1,1,1]],
+ [["Поддержка<br>Growth-менеджера",""],[1,1,1,1]],
+ [["Персональный план роста","(AI-агент)"],[1,1,1,1]],
+ [["Доступ к AI-Coach",""],[1,1,1,1]],
+ [["2 online / мес","· Demo Day<br>· или: AI-Lab (практикум) / Fuck-up Night и другие"],[1,1,1,1],{0:["1 online / мес","Demo Day"]}],
+ [["Expert Peer Circle","работа в мини-группе с экспертом 2р в мес"],[0,1,1,1]],
+ [["Бизнес-менеджер","знакомства по запросу"],[0,1,1,1]],
+ [["Менторинг с экспертами","разбор бизнеса и помощь с внедрением и ревью"],[0,0,1,1]],
+ [["Founder Circle","4 стратегические встречи с лидерами в год"],[0,0,1,1]],
+ [["2 офлайн ивента в год",""],[0,0,1,1]],
+ [["Рабочие связки и AI-агенты",""],[0,0,0,1],{3:["Рабочие связки и AI-агенты Тараса",""]}],
+ [["Мастермайнд","закрытые страт. разборы в кругу собственников"],[0,0,0,1]]
+],
+
+ltT:"LTV и точки входа",
+ltC:"Клуб",
+ltA1:"Лиды", ltAh:"Клуб – самостоятельная точка входа", ltAp:"Вариант продажи для тех лидов, которые не купили продукт, курсы или программы.",
+ltB1:"Курсы и программы", ltBh:"Работает и в обратную сторону", ltBp:"В тарифы всех курсов и программ включен доступ в клуб: срок и тариф клуба зависят от тарифа курса. Человек сразу вовлекается в клуб и видит его ценность.",
+
+nsE:"Следующие шаги",
+nsT:"Если концепция ок, дальше",
+ns:["Утверждается механика всех продуктовых активностей","Фиксируются и конкретизируются метрики, по которым мы оцениваем здоровье проекта","Утверждается план по запуску тарифов","Под них строится график-расписание","Считается юнит-экономика","Строится механика LTV","Формируется финплан проекта"]
+},
+uk:{
+brand:"AI-Клуб 2.0",
+s1e:"Концепція",
+s1t:"AI-Клуб 2.0",
+s1s:"<span class=\"bur\">Від AI-новин і ком'юніті</span><br><span class=\"emr\">– до вимірюваних трансформацій, корисних зв'язків і довгострокового клієнтського результату</span>",
+s1b:"Lets go",
+s1f1:"ролі учасників", s1f2:"кроків впровадження", s1f3:"рівні участі",
+
+segE:"Для кого",
+segT:"Сегменти ЦА",
+segS:"і різні треки всередині клубу",
+lSeg:"Сегмент", lInc:"Рівень доходу", lTask:"Головна задача", lHow:"Як вирішуємо", lRes:"Типовий результат", lMeas:"Як вимірюємо прогрес", lSup:"Підтримка",
+seg:[
+ {n:"Спеціаліст / «ремісник»",i:"1,000–1,999&nbsp;$", st:"Перше впровадження",task:"Краще й швидше виконувати професійні задачі",how:"Обираємо просту робочу задачу. Учасник покращує послугу, виконує перший оплачуваний проєкт з AI або звільняє час на роботу з клієнтами.",res:"Робочий AI-workflow у своїй професії + приклад результату",meas:"Один завершений кейс із показником до і після. Наприклад, час на задачу, якість результату або перша оплачена робота.",sup:"Шаблони, практикуми, допомога Growth-менеджера"},
+ {n:"Керівник / управлінець",i:"2,000–4,999&nbsp;$", st:"Автоматизація + Повторюваний результат",task:"Впроваджувати AI в процеси команди, керувати змінами",how:"Перетворюємо вдалий експеримент на регулярний процес або послугу. Працюємо над середнім чеком, маржею або кількістю задач, які можна виконати за той самий час.",res:"Команда застосовує SOP або workflow у робочому циклі",meas:"Процес повторено в кількох робочих циклах, а ефект видно в оплатах, маржі або продуктивності.",sup:"Change-management розбори, зворотний зв'язок щодо процесу"},
+ {n:"Підприємець / власник",i:"5,000+&nbsp;$", st:"Масштабування",task:"Підвищувати ефективність, керувати портфелем AI-проєктів",how:"Передаємо процес команді, впроваджуємо агентів у бізнес і оцінюємо вплив на виручку, маржу або витрати.",res:"Запущено один процес із власником і вимірюваною економією часу/якості",meas:"Команда регулярно використовує рішення, а власник процесу підтверджує ефект і вартість підтримки. За відповідної бізнес-задачі учасник може подати заявку на менторинг у Gold або Platinum.",sup:"Кейси бізнесу й дорожня карта. Знайомства на запит і Expert Peer Circle доступні в Silver, Gold і Platinum."}
+],
+
+paT:"Їх усіх об'єднує один біль", jtL:"JTBD: на яку роботу клієнт наймає клуб",
+insL:"Інсайт", insT:"Найсильніший біль – «я пробую AI, але моя робота чи бізнес суттєво не змінюються»",
+paB:"AI-інструменти змінюються швидше, ніж я встигаю їх валідувати й оцінювати.",
+paQ:"Допоможіть мені побачити можливість, підібрати інструмент, безпечно впровадити його та перевірити ефект з мінімальною втратою часу.",
+soE:"Рішення",
+so1l:"Суть", so1:"Клуб практиків, де учасники впроваджують AI у свою роботу, знаходять способи збільшити дохід або прибуток і переходять до складніших задач у міру підтверджених результатів.",
+so2l:"Коротко", so2:"Регулярне впровадження AI<br>у роботу/бізнес/професійну діяльність і життя",
+so3:"Заробляй більше. Витрачай менше часу. Живи вільніше",
+kmL:"Ключовий меседж",
+km0:"Ти не просто стежиш за розвитком AI, а", km1:"регулярно знаходиш можливості", km2:"впроваджуєш робочі рішення", km3:"отримуєш зворотний зв'язок", km4:"ростеш (у грошах і компетенціях)", km5:"разом із людьми, які роблять те саме",
+kmT:"Ти не просто стежиш за розвитком AI, а регулярно знаходиш можливості, впроваджуєш робочі рішення, отримуєш зворотний зв'язок і ростеш (у грошах і компетенціях) разом із людьми, які роблять те саме",
+prL:"Обіцянка без гарантій", prT:"Клуб забезпечує інфраструктуру, експертизу, зворотний зв'язок і практику для регулярних впроваджень. Він не гарантує дохід, окупність або автоматизацію будь-якого процесу.",   
+
+was:"Було", naT:"Що дає клуб", naG:"Цільова поведінка ДО / ПІСЛЯ", wasL:"Без клубу", nowL:"У клубі", naL:"Зараз / без клубу", naR:"Після участі (цільова поведінка)",
+na1a:"Читає багато AI-новин, не знає, чому вірити", na1b:"Отримує відфільтровані, перевірені на практиці рішення й обмеження для безпеки",
+na2a:"Зберігає промпти й ідеї «на потім»", na2b:"Щомісяця обирає одну пріоритетну задачу й виконує спринт впровадження.",
+na3a:"Впроваджує сам, застрягає", na3b:"Звертається до Growth-менеджера й отримує зворотний зв'язок у спільноті. У Silver, Gold і Platinum може запросити адресне знайомство.",
+na4a:"Не розуміє, що змінилося", na4b:"Фіксує базову точку, результат, доказ і рішення щодо наступного кроку.",
+
+fcT:"Підсумок: драбина росту учасника",
+fc1:"До клубу приходять зі своєю робочою задачею", fc2:"й отримують доступ до досвіду людей, які вже вирішували схожі кейси.", fc3:"Через кілька циклів учасник сам стає такою людиною для інших.", fc4:"Ця взаємність пов'язує три треки й дає досвідченим учасникам причину залишатися.",
+fcP:"До клубу приходять зі своєю робочою задачею й отримують доступ до досвіду людей, які вже вирішували схожі кейси. Через кілька циклів учасник сам стає такою людиною для інших. Ця взаємність пов'язує три треки й дає досвідченим учасникам причину залишатися.",
+
+vaT:"<span class=\"va-a\">Тут реалізуємо цінність клубу:</span><span class=\"va-b\">рости в грошах із нами</span>",
+vaHow:"Як",
+va1h:"Старт", va1:"Фіксуємо поточний діапазон, задачу й вихідний показник.",
+va2h:"Реалізація", va2:"Діє за побудованим маршрутом AI-агентом, створює результати, прогрес трекає Growth-менеджер.",
+va3h:"Кейс", va3:"Кейси зі зростанням заробітку або прибутку розбираємо на Demo Day за згодою автора.",
+
+seE:"Що саме продаємо:",
+seT:"<span>не інформацію,</span> а трансформацію",
+seK:"Killing feature:<br>система впровадження",
+seQ:"«Одиниця продукту» – це не ефір і не пост, а завершений мікроцикл змін учасника",
+seP:"Спринти входять в усі тарифи. У спринті учасник відзначає прогрес впровадження й фіксує статус роботи. Спринт для кожного учасника формується індивідуально, за його контекстом.",
+
+hwT:"Як це працює",
+hwP:"На старті учасник описує AI-агенту свою ситуацію, робочу задачу та/або бажаний результат, потім за допомогою агента отримує покроковий план дій для досягнення мети й за підтримки Growth-менеджера оцінює ефект у міру впровадження.",
+st:[["Запит","Формулює реальну задачу та/або бажаний результат."],["Варіанти","AI-агент* будує варіанти","*створений і навчений за спец. Growth-методологією"],["Відбір","Обирає відповідне рішення з прийнятною складністю й ризиками"],["План","Визначає власника задачі, доступи, межі експерименту, вихідну метрику."],["Практика","Реалізує мінімальний робочий AI-workflow у своєму середовищі."],["Перевірка","Тестує на реальних допустимих даних, фіксує помилки й економіку."],["Демо-дей","Показує, що справді запрацювало; отримує зворотний зв'язок."],["Рефлексія","Залишає кейс у бібліотеці, обирає масштабування або наступний спринт."]],
+
+dodT:"Впровадження використовується хоча б в одному реальному робочому сценарії, має власника, пройшло перевірку якості/ризиків і супроводжується свідченням результату.",
+dodA:"«Подивився ефір»", dodB:"«зберіг промпт»", dodC:"не вважаються впровадженням.",
+
+ccT:"Межі продукту: курс ↔ клуб",
+ccL:"Курс", ccR:"Клуб",
+cc1a:"Навчає фундаментальних компетенцій та інструментів", cc1b:"Допомагає обирати, впроваджувати, повторювати й адаптувати рішення",
+cc2a:"Програма, рівні й домашні завдання", cc2b:"Практика, розбори й спринти на всіх тарифах. Адресні знайомства доступні в Silver, Gold і Platinum.",
+cc3a:"Перевірка засвоєння знань і навичок", cc3b:"Доказ застосування в реальній роботі",
+cc4a:"Потрібен новачку без базових компетенцій", cc4b:"Корисний людині з реальною задачею й готовністю діяти",
+
+ddT:"Центральний ритуал<br>AI Demo Day",
+ddO:"Проходить раз на місяць, доступний усім.",
+ddX:"Тут ми збираємо кейси.<br>Ефіри іноді можемо робити відкритими, вести трансляції – гріти тих, хто сумнівається.<br>Це дуже гнучкий і опційний формат.",
+ddS:"Сценарій 120 хвилин",
+dd:[["10 хвилин","тренди й мета"],["4 × 15 хвилин","учасники демонструють «було → зробили → що змінилося → обмеження»"],["30 хвилин","питання й розбір"],["20 хвилин","«найкращі уроки місяця»"]],
+ddPl:"Гейміфікація", ddPs:"Тут даємо визнання",
+ach:["«Практик місяця»","«Впровадження місяця»","«Найкорисніший peer»"],
+ddP:"Ачівки – за перевірюваними критеріями, а не за гучністю самопрезентації. Комунікація кейсів лише з дозволу автора й після перевірки конфіденційності.",
+
+trE:"Продукт клубу",
+trT:"Чотири рівні участі",
+trPl:"Робоча ціна",
+trN:"Ми не надаємо внутрішніх розстрочок, тільки банківська.",
+tiers:[
+ {n:"Bronze",w:"масова спільнота",pb:"990&nbsp;$",ps:"на рік (≈ 83&nbsp;$ на місяць)"},
+ {n:"Silver",w:"для людей з першими клієнтами або бізнесом",pb:"2,990&nbsp;$",ps:"на рік (≈ 249&nbsp;$ на місяць)"},
+ {n:"Gold",w:"для власників і топменеджерів",pb:"10,000&nbsp;$",ps:"на рік (≈ 833&nbsp;$ на місяць)"},
+ {n:"Platinum",w:"для власників середнього й великого бізнесу",pb:"50,000&nbsp;$",ps:"на рік (≈ 4,167&nbsp;$ на місяць)"}
+],
+feat:[
+ [["AI Radar","дайджест:<br>· новини й тренди<br>· інструменти й кейси"],[1,1,1,1]],
+ [["Club","· спільнота й нетворкінг"],[1,1,1,1]],
+ [["Підтримка<br>Growth-менеджера",""],[1,1,1,1]],
+ [["Персональний план росту","(AI-агент)"],[1,1,1,1]],
+ [["Доступ до AI-Coach",""],[1,1,1,1]],
+ [["2 online / міс","· Demo Day<br>· або: AI-Lab (практикум) / Fuck-up Night та інші"],[1,1,1,1],{0:["1 online / міс","Demo Day"]}],
+ [["Expert Peer Circle","робота в міні-групі з експертом 2р на міс"],[0,1,1,1]],
+ [["Бізнес-менеджер","знайомства на запит"],[0,1,1,1]],
+ [["Менторинг з експертами","розбір бізнесу й допомога з впровадженням і рев'ю"],[0,0,1,1]],
+ [["Founder Circle","4 стратегічні зустрічі з лідерами на рік"],[0,0,1,1]],
+ [["2 офлайн-івенти на рік",""],[0,0,1,1]],
+ [["Робочі зв'язки й AI-агенти",""],[0,0,0,1],{3:["Робочі зв'язки й AI-агенти Тараса",""]}],
+ [["Мастермайнд","закриті страт. розбори в колі власників"],[0,0,0,1]]
+],
+
+ltT:"LTV і точки входу",
+ltC:"Клуб",
+ltA1:"Ліди", ltAh:"Клуб – самостійна точка входу", ltAp:"Варіант продажу для тих лідів, які не купили продукт, курси або програми.",
+ltB1:"Курси й програми", ltBh:"Працює й у зворотний бік", ltBp:"У тарифи всіх курсів і програм включено доступ до клубу: термін і тариф клубу залежать від тарифу курсу. Людина одразу залучається в клуб і бачить його цінність.",
+
+nsE:"Наступні кроки",
+nsT:"Якщо концепція ок, далі",
+ns:["Затверджується механіка всіх продуктових активностей","Фіксуються й конкретизуються метрики, за якими ми оцінюємо здоров'я проєкту","Затверджується план запуску тарифів","Під них будується графік-розклад","Рахується юніт-економіка","Будується механіка LTV","Формується фінплан проєкту"]
+}};
+T.ru.pinA="Задача";T.ru.pinB="Внедрение";T.ru.pinC="Результат";
+T.uk.pinA="Задача";T.uk.pinB="Впровадження";T.uk.pinC="Результат";
+
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const root=document.documentElement, secs=$$('.sec');
+let lang='ru', L=T.ru;
+const words=t=>t.split(' ').map((w,i)=>`<span style="--w:${i}">${w}</span>`).join(' ');
+
+function renderSeg(){
+  const SV=['SH1','SH2','SH3'];
+  $('#sg').innerHTML=L.seg.map((g,k)=>`<article class="pc rv" style="--d:${.15+k*.12}s">
+    <header class="pc-h"><div class="pc-num">0${k+1}</div><div class="pc-who"><div class="lb">${L.lSeg}</div><h3>${g.n}</h3></div><div class="pc-pill"><span>${L.lInc}</span><b>${g.i}</b></div></header>
+    <div class="pc-g">
+      <div class="pc-l">
+        <div class="pc-t"><div class="lb">${L.lTask}</div><p class="st">${g.task}</p></div>
+        <div class="pc-t gold"><div class="lb">${L.lRes}</div><div class="pc-stg">${g.st}</div><p>${g.res}</p></div>
+        <div class="pc-t"><div class="lb">${L.lSup}</div><p>${g.sup}</p></div>
+      </div>
+      <div class="pc-v"><div class="pc-vw"><video data-src="${SV[k]}" muted loop playsinline></video></div>
+        <div class="pc-ov"><div><div class="lb">${L.lHow}</div><p>${g.how}</p></div><div><div class="lb">${L.lMeas}</div><p>${g.meas}</p></div></div>
+      </div>
+    </div>
+  </article>`).join('');
+  if(window.vio)$$('#sg video[data-src]').forEach(v=>window.vio.observe(v));
+}
+
+const hw=$('#how'); let hwS=-1;
+const POS=['p-bl','p-tr','p-br','p-tl'];
+function renderHow(){
+  $('#hwr').innerHTML=L.st.map((s,k)=>`<button data-k="${k+1}"><i></i><span>0${k+1} ${s[0]}</span></button>`).join('');
+  $$('#hwr button').forEach(b=>b.addEventListener('click',()=>hwJump(+b.dataset.k)));
+  hwS=-1; hwFrame(true);
+}
+function hwSpan(){return hw.offsetHeight-innerHeight}
+function hwJump(k){scrollTo({top:hw.getBoundingClientRect().top+scrollY+hwSpan()*((k+.5)/9),behavior:'smooth'})}
+function hwSet(k){
+  if(k===hwS)return; hwS=k;
+  $('#hwo').className='hw-ov '+(k===0?'p-bl':POS[(k-1)%4]);
+  const c=$('#hwc'); let h;
+  if(k===0)h=`<h2 class="hw-h">${L.hwT}</h2><p class="hw-p">${L.hwP}</p>`;
+  else{const s=L.st[k-1];h=`<div class="hw-k">${L.hwT} · <span class="cur">0${k}</span> / 08</div><h3 class="hw-h">${s[0]}</h3><p class="hw-p">${s[1]}</p>${s[2]?`<small class="hw-fn">${s[2]}</small>`:''}`}
+  c.classList.remove('act'); c.innerHTML=h; void c.offsetWidth; c.classList.add('act');
+  $$('#hwr button').forEach(b=>{const n=+b.dataset.k;b.classList.toggle('on',n===k);b.classList.toggle('done',n<k)});
+}
+const hv=$('#hwv'); let hvDur=7.5, hvCur=0, hvLast=0, hvTarget=0;
+hv.addEventListener('loadedmetadata',()=>{hvDur=Math.min(hv.duration||7.5,7.5);hv.pause()});
+(function hvLoop(t){const dt=Math.min(.1,(t-hvLast)/1000||0);hvLast=t;
+  hvCur+=(hvTarget-hvCur)*(1-Math.exp(-dt*8));if(Math.abs(hvTarget-hvCur)<.002)hvCur=hvTarget;
+  if(hv.readyState>=1&&!hv.seeking&&Math.abs(hv.currentTime-hvCur)>.01){try{hv.currentTime=hvCur}catch(e){}}
+  requestAnimationFrame(hvLoop)})(0);
+function hwFrame(force){
+  const r=hw.getBoundingClientRect(); if(!force&&(r.bottom<0||r.top>innerHeight))return;
+  const p=Math.min(1,Math.max(0,-r.top/hwSpan())); hvTarget=p*hvDur;
+  hwSet(Math.min(8,Math.floor(p*9))); $('#hwb').style.width=(p*100)+'%';
+}
+
+function renderDD(){
+  $('#ddBar').innerHTML=DDW.map((w,k)=>`<div class="dd-seg" data-k="${k}" style="--i:${k};flex:${w};background:${DDC[k]};color:${k<2?'#07080b':'#f2efe9'}">${L.dd[k][0]}</div>`).join('');
+  $('#ddLeg').innerHTML=L.dd.map((d,k)=>`<div class="dd-li" data-k="${k}"><i style="background:${DDC[k]}"></i><b>${d[0]}</b><span>${d[1]}</span></div>`).join('');
+  $('#ach').innerHTML=L.ach.map(a=>`<span>${a}</span>`).join('');
+  $$('#ddBar .dd-seg,#ddLeg .dd-li').forEach(e=>{
+    e.addEventListener('mouseenter',()=>$$(`#ddBar [data-k="${e.dataset.k}"],#ddLeg [data-k="${e.dataset.k}"]`).forEach(x=>x.classList.add('hl')));
+    e.addEventListener('mouseleave',()=>$$('#ddBar .hl,#ddLeg .hl').forEach(x=>x.classList.remove('hl')));
+  });
+}
+function renderTiers(){
+  $('#tr').innerHTML=L.tiers.map((t,c)=>`<div class="gl tc rv" style="--d:${.15+c*.1}s"><div class="tc-h"><b>${t.n}</b><p>${t.w}</p></div><ul>`+
+    L.feat.map((f,r)=>{const on=f[1][c], ov=f[2]&&f[2][c], nm=ov?ov[0]:f[0][0], sb=ov?ov[1]:f[0][1];
+      return `<li class="${on?'':'no'} r${r}" style="--k:${r+c*2}"><i>${on?'✓':'–'}</i><span class="t">${nm}${sb?`<small>${sb}</small>`:''}</span></li>`}).join('')+
+    `</ul><div class="tc-p"><div class="pl">${L.trPl}</div><div class="pb">${t.pb}</div><div class="ps">${t.ps}</div></div></div>`).join('');
+}
+let nsI=0, nsHold=0;
+function renderNS(){
+  $('#ns').innerHTML=L.ns.map((t,k)=>`<li data-k="${k}"><span class="n">0${k+1}</span><div><div class="t">${t}</div>${k===1?`<div class="mets">${METS.map((m,j)=>`<span style="--m:${j}">${m}</span>`).join('')}</div>`:''}</div></li>`).join('');
+  $$('#ns li').forEach(e=>e.addEventListener('mouseenter',()=>{nsHold=Date.now()+6000;setNS(+e.dataset.k)}));
+  setNS(nsI);
+}
+function setNS(k){nsI=k;$$('#ns li').forEach(e=>e.classList.toggle('on',+e.dataset.k===k))}
+
+function applyLang(l){
+  lang=l==='uk'?'uk':'ru'; L=T[lang]; root.lang=lang;
+  $$('[data-i]').forEach(el=>{const v=L[el.dataset.i]; if(typeof v==='string') el.innerHTML=v;});
+  $('#paQ').innerHTML=words(L.paQ);
+  renderSeg(); renderHow(); renderDD(); renderTiers(); renderNS();
+  $$('.hud-lang button').forEach(b=>b.classList.toggle('on',b.dataset.l===lang));
+  try{localStorage.setItem('club-lang',lang)}catch(e){}
+}
+$$('.hud-lang button').forEach(b=>b.addEventListener('click',()=>{applyLang(b.dataset.l);
+  try{const u=new URL(location.href); if(lang==='uk')u.searchParams.set('lang','uk'); else u.searchParams.delete('lang'); history.replaceState(null,'',u)}catch(e){}}));
+
+/* что дает клуб: карточки сменяют друг друга прокруткой */
+const baS=$('#ba'), baC=$$('#baRow .bac'); let baI=0;
+function baSet(k){if(k===baI)return;baI=k;baC.forEach((c,j)=>c.classList.toggle('on',j===k))}
+function baFrame(){if(innerWidth<=900)return;const r=baS.getBoundingClientRect(),span=baS.offsetHeight-innerHeight;if(r.bottom<0||r.top>innerHeight)return;
+  const p=Math.min(.999,Math.max(0,-r.top/span));baSet(Math.floor(p*baC.length))}
+baC.forEach((c,j)=>c.addEventListener('click',()=>{if(innerWidth<=900)return;const span=baS.offsetHeight-innerHeight;scrollTo({top:baS.getBoundingClientRect().top+scrollY+span*((j+.5)/baC.length),behavior:'smooth'})}));
+addEventListener('scroll',()=>requestAnimationFrame(baFrame),{passive:true});
+
+/* решение: видео глаза крутится прокруткой, в зрачке появляется текст */
+const eyS=$('#eye'), eyV=$('#eyev'); let eyDur=6, eyCur=0, eyT=0, eyLast=0;
+eyV.addEventListener('loadedmetadata',()=>{eyDur=eyV.duration||6;eyV.pause()});
+(function eyLoop(t){const dt=Math.min(.1,(t-eyLast)/1000||0);eyLast=t;
+  eyCur+=(eyT-eyCur)*(1-Math.exp(-dt*8));if(Math.abs(eyT-eyCur)<.002)eyCur=eyT;
+  if(eyV.readyState>=1&&!eyV.seeking&&Math.abs(eyV.currentTime-eyCur)>.01){try{eyV.currentTime=eyCur}catch(e){}}
+  requestAnimationFrame(eyLoop)})(0);
+const cl=(x,a,b)=>Math.min(1,Math.max(0,(x-a)/(b-a)));
+function eyFrame(){const r=eyS.getBoundingClientRect();if(r.bottom<0||r.top>innerHeight)return;
+  const p=Math.min(1,Math.max(0,-r.top/(eyS.offsetHeight-innerHeight)));
+  eyT=cl(p,.1,.6)*eyDur; $('#eyeB').style.opacity=1-cl(p,0,.14);
+  const a=cl(p,.5,.57), m=cl(p,.62,.74), q=cl(p,.72,.85);
+  const H=$('#eyeH'), Rr=$('#eyeR');
+  const dy=innerHeight/2-(H.offsetTop+H.offsetHeight/2), big=innerWidth<700?1.9:2.6;
+  const em=m*m*(3-2*m), sc=(big-.3*(1-a))*(1-em)+1*em;
+  H.style.opacity=a; H.style.transform=`translateY(${dy*(1-em)}px) scale(${sc})`;
+  H.querySelector('.ln').style.opacity=em;
+  Rr.style.opacity=q; Rr.style.transform=`translateY(${30*(1-q)}px)`;
+}
+addEventListener('scroll',()=>requestAnimationFrame(eyFrame),{passive:true});
+addEventListener('resize',eyFrame);
+
+/* ключевой месседж: строки по очереди подсвечиваются при прокрутке */
+function kmFrame(){const P=document.getElementById('kmP');if(!P)return;const r=P.getBoundingClientRect(),L=[...P.querySelectorAll('.kl')];
+  if(r.bottom<0||r.top>innerHeight)return;
+  const c=innerHeight*.55;let best=0,bd=1e9;L.forEach((e,i)=>{const b=e.getBoundingClientRect(),d=Math.abs((b.top+b.bottom)/2-c);if(d<bd){bd=d;best=i}});
+  L.forEach((e,i)=>e.classList.toggle('on',i===best))}
+addEventListener('scroll',()=>requestAnimationFrame(kmFrame),{passive:true});
+
+/* видео в окнах: грузятся и крутятся только рядом с экраном */
+const vio=window.vio=new IntersectionObserver(es=>es.forEach(e=>{const v=e.target;if(e.isIntersecting){if(!v.src){v.src=VS[v.dataset.src]}v.play().catch(()=>{})}else if(!v.paused)v.pause()}),{rootMargin:'300px'});
+$$('video[data-src]').forEach(v=>vio.observe(v));
+
+let nsTimer=null;
+function onEnter(s){if(s.id==='next-steps'){clearInterval(nsTimer);setNS(0);nsTimer=setInterval(()=>{if(Date.now()>nsHold)setNS((nsI+1)%7)},2200)}}
+function onLeave(s){if(s.id==='next-steps')clearInterval(nsTimer)}
+function onScroll(){
+  const h=innerHeight;
+  secs.forEach(s=>{
+    const r=s.getBoundingClientRect();
+    const show=r.top<h*.78&&r.bottom>h*.2, gone=r.bottom<=0||r.top>=h;
+    if(show&&!s.classList.contains('in')){s.classList.add('in');onEnter(s)}
+    else if(gone&&s.classList.contains('in')){s.classList.remove('in');onLeave(s)}
+  });
+  const max=document.documentElement.scrollHeight-h; $('#prog').style.width=(max>0?scrollY/max*100:0)+'%';
+  hwFrame();
+}
+let ticking=false;
+addEventListener('scroll',()=>{if(!ticking){ticking=true;requestAnimationFrame(()=>{onScroll();ticking=false})}},{passive:true});
+addEventListener('resize',onScroll);
+$$('[data-go]').forEach(b=>b.addEventListener('click',e=>{e.preventDefault();secs[1].scrollIntoView({behavior:'smooth'})}));
+
+let sl='ru'; const qp=new URLSearchParams(location.search).get('lang');
+if(qp==='uk'||qp==='ua')sl='uk'; else if(!qp){try{sl=localStorage.getItem('club-lang')||'ru'}catch(e){}}
+applyLang(sl);
+onScroll();
+eyFrame();
+</script>
+</body>
+</html>
